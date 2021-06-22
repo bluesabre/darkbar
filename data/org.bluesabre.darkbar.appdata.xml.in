@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2021 Sean Davis <sean@bluesabre.org> -->
+<component type="desktop">
+  <id>org.bluesabre.darkbar</id>
+  <metadata_license>CC0</metadata_license>
+  <name>Darkbar</name>
+  <summary>Darken application titlebars based on your preference</summary>
+  <description>
+    <p></p>
+  </description>
+  <custom>
+    <value key="x-appcenter-color-primary">#2a2a2a</value>
+    <value key="x-appcenter-color-primary-text">rgb(255, 255, 255)</value>
+    <value key="x-appcenter-suggested-price">5</value>
+  </custom>
+</component>
