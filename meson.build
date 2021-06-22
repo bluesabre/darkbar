@@ -20,6 +20,8 @@ executable(
     dependencies: [
         dependency('gtk+-3.0'),
         dependency('glib-2.0'),
+        dependency('gio-unix-2.0'),
+        dependency('gee-0.8'),
         [dependency('libwnck-3.0'), dependency('x11')],
     ],
     install: true
