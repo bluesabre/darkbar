@@ -13,6 +13,7 @@ public class MyApp : Gtk.Application {
 
     public ListStore list_store { get; set; }
     public Gee.HashMap<string, ForeignWindow> window_map { get; set; }
+    public bool prefers_dark { get; set; }
 
     private string get_icon_name (string app_id) {
         var app_info = new DesktopAppInfo (app_id + ".desktop");
@@ -24,9 +25,15 @@ public class MyApp : Gtk.Application {
     }
 
     public void append (string app_id) {
-        var window = new ForeignWindow (app_id, get_icon_name (app_id));
+        var window = new ForeignWindow (app_id, get_icon_name (app_id), prefers_dark);
         window_map[app_id] = window;
         list_store.append (window);
+    }
+
+    public void update_windows () {
+        foreach (var window in window_map.values) {
+            window.set_system_dark_mode (prefers_dark);
+        }
     }
 
     protected override void activate () {
@@ -74,6 +81,13 @@ public class MyApp : Gtk.Application {
         listbox.show_all ();
 
         main_window.add (listbox);
+
+        var granite_settings = Granite.Settings.get_default ();
+        prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+        granite_settings.notify["prefers-color-scheme"].connect (() => {
+            prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+            update_windows ();
+        });
 
         var screen = Wnck.Screen.get_default ();
         screen.window_opened.connect ((window) => {

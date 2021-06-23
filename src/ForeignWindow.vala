@@ -19,15 +19,14 @@ public class ForeignWindow : GLib.Object {
     public DisplayMode actual_mode { get; set; }
     public Gee.HashSet<ulong> list { get; set; }
 
-    public ForeignWindow (string app_id, string icon_name) {
-        Object (app_id: app_id, icon_name: icon_name);
+    public ForeignWindow (string app_id, string icon_name, bool prefers_dark) {
+        Object (app_id: app_id, icon_name: icon_name, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT);
     }
 
     construct {
         list = new Gee.HashSet<ulong> ();
         mode = ForeignWindow.DisplayMode.NONE;
         actual_mode = ForeignWindow.DisplayMode.NONE;
-        system_mode = ForeignWindow.DisplayMode.DARK;
     }
 
     public void add_xid (ulong xid) {
@@ -58,8 +57,7 @@ public class ForeignWindow : GLib.Object {
         }
     }
 
-    public void set_mode_from_string (string modestr) {
-        mode = get_mode_from_string (modestr);
+    public void recompute_mode () {
         if (mode == DisplayMode.SYSTEM) {
             actual_mode = system_mode;
         } else if (mode == DisplayMode.NONE) {
@@ -70,8 +68,23 @@ public class ForeignWindow : GLib.Object {
         apply ();
     }
 
+    public void set_mode_from_string (string modestr) {
+        mode = get_mode_from_string (modestr);
+        recompute_mode ();
+    }
+
     public void set_actualmode_from_string (string modestr) {
         mode = get_mode_from_string (modestr);
+        recompute_mode ();
+    }
+
+    public void set_system_dark_mode (bool prefers_dark) {
+        if (prefers_dark) {
+            system_mode = DisplayMode.DARK;
+        } else {
+            system_mode = DisplayMode.LIGHT;
+        }
+        recompute_mode ();
     }
 
     public void apply () {
