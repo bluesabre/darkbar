@@ -11,20 +11,6 @@ public class MyApp : Gtk.Application {
         );
     }
 
-    public enum DisplayMode {
-        NONE,
-        SYSTEM,
-        DARK,
-        LIGHT
-    }
-
-    public class ForeignWindow : GLib.Object {
-        public string app_id;
-        public string icon_name;
-        public DisplayMode mode;
-        public Gee.ArrayList<ulong> list;
-    }
-
     public ListStore list_store { get; set; }
     public Gee.HashMap<string, ForeignWindow> window_map { get; set; }
 
@@ -38,19 +24,9 @@ public class MyApp : Gtk.Application {
     }
 
     public void append (string app_id) {
-        var window = new ForeignWindow () {
-            app_id = app_id,
-            icon_name = get_icon_name (app_id),
-            mode = DisplayMode.NONE,
-            list = new Gee.ArrayList<ulong> ()
-        };
+        var window = new ForeignWindow (app_id, get_icon_name (app_id));
         window_map[app_id] = window;
         list_store.append (window);
-    }
-
-    public void append_xid (string app_id, ulong xid) {
-        ForeignWindow window = window_map[app_id];
-        window.list.add (xid);
     }
 
     protected override void activate () {
@@ -86,32 +62,7 @@ public class MyApp : Gtk.Application {
             box.pack_start (combo, false, false, 0);
 
             combo.changed.connect (() => {
-                switch (combo.active_id) {
-                    case "none":
-                        ((ForeignWindow)obj).mode = DisplayMode.NONE;
-                        break;
-                    case "system":
-                        ((ForeignWindow)obj).mode = DisplayMode.SYSTEM;
-                        break;
-                    case "light":
-                        ((ForeignWindow)obj).mode = DisplayMode.LIGHT;
-                        break;
-                    case "dark":
-                        ((ForeignWindow)obj).mode = DisplayMode.DARK;
-                        break;
-                    default:
-                        ((ForeignWindow)obj).mode = DisplayMode.NONE;
-                        break;
-                }
-                foreach (ulong xid in ((ForeignWindow)obj).list) {
-                    var cmd = "xprop -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT %s".printf (xid, combo.active_id);
-                    debug (cmd);
-                    try {
-                        GLib.Process.spawn_command_line_async (cmd);
-                    } catch (GLib.SpawnError e) {
-                        warning ("Failed to spawn xprop: %s", e.message);
-                    }
-                }
+                ((ForeignWindow)obj).set_mode_from_string (combo.active_id);
                 return;
             });
 
@@ -132,7 +83,7 @@ public class MyApp : Gtk.Application {
             if (!window_map.has_key (class_instance_name)) {
                 append (class_instance_name);
             }
-            append_xid (class_instance_name, xid);
+            window_map[class_instance_name].add_xid (xid);
         });
 
         main_window.show_all ();
