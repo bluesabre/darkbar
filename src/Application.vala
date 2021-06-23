@@ -78,12 +78,21 @@ public class MyApp : Gtk.Application {
         var screen = Wnck.Screen.get_default ();
         screen.window_opened.connect ((window) => {
             ulong xid = window.get_xid ();
-            unowned string class_instance_name = window.get_class_instance_name ();
+            unowned string app_id = window.get_class_instance_name ();
 
-            if (!window_map.has_key (class_instance_name)) {
-                append (class_instance_name);
+            if (!window_map.has_key (app_id)) {
+                append (app_id);
             }
-            window_map[class_instance_name].add_xid (xid);
+            window_map[app_id].add_xid (xid);
+        });
+
+        screen.window_closed.connect ((window) => {
+            ulong xid = window.get_xid ();
+            unowned string app_id = window.get_class_instance_name ();
+
+            if (window_map.has_key (app_id)) {
+                window_map[app_id].remove_xid (xid);
+            }
         });
 
         main_window.show_all ();
