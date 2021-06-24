@@ -13,14 +13,15 @@ public class ForeignWindow : GLib.Object {
     }
 
     public string app_id { get; set; }
+    public string app_name { get; set; }
     public string icon_name { get; set; }
     public DisplayMode mode { get; set; }
     public DisplayMode system_mode { get; set; }
     public DisplayMode actual_mode { get; set; }
     public Gee.HashSet<ulong> list { get; set; }
 
-    public ForeignWindow (string app_id, string icon_name, bool prefers_dark) {
-        Object (app_id: app_id, icon_name: icon_name, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT);
+    public ForeignWindow (string app_id, string app_name, string icon_name, bool prefers_dark) {
+        Object (app_id: app_id, app_name: app_name, icon_name: icon_name, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT);
     }
 
     construct {

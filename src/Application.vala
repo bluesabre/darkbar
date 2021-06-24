@@ -16,17 +16,48 @@ public class MyApp : Gtk.Application {
     private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
     public bool prefers_dark { get; set; }
 
-    private string get_icon_name (string app_id) {
-        var app_info = new DesktopAppInfo (app_id + ".desktop");
-        var icon_name = "image-missing";
-        if (app_info != null) {
-            icon_name = app_info.get_string ("Icon");
+    private AppInfo? find_app_info (string app_id) {
+        List<AppInfo> app_infos = AppInfo.get_all ();
+        foreach (AppInfo app_info in app_infos) {
+            var id = app_info.get_id ();
+            if (id.has_suffix (".desktop")) {
+                id = id.substring(0, id.length - 8);
+                var idx = id.index_of (".");
+                if (idx != -1) {
+                    // RDN
+                    id = id.substring(idx + 1);
+                    foreach (var subid in id.down ().split (".")) {
+                        if (subid == app_id) {
+                            return app_info;
+                        }
+                    }
+                    continue;
+                }
+                if (id.down () == app_id) {
+                    return app_info;
+                }
+            }
         }
-        return icon_name;
+        return null;
+    }
+
+    private DesktopAppInfo? get_app_info (string app_id) {
+        var app_info = new DesktopAppInfo (app_id + ".desktop");
+        if (app_info == null) {
+            app_info = (DesktopAppInfo)find_app_info (app_id);
+        }
+        return app_info;
     }
 
     public void append (string app_id) {
-        var window = new ForeignWindow (app_id, get_icon_name (app_id), prefers_dark);
+        var app_info = get_app_info (app_id);
+        var icon_name = "image-missing";
+        var app_name = app_id;
+        if (app_info != null) {
+            icon_name = app_info.get_string ("Icon");
+            app_name = app_info.get_name ();
+        }
+        var window = new ForeignWindow (app_id, app_name, icon_name, prefers_dark);
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);
     }
@@ -38,10 +69,10 @@ public class MyApp : Gtk.Application {
     }
 
     private static int window_sort_function (ForeignWindow win1, ForeignWindow win2) {
-        if (win1.app_id == win2.app_id) {
+        if (win1.app_name.down () == win2.app_name.down ()) {
             return 0;
         }
-        if (win1.app_id > win2.app_id) {
+        if (win1.app_name.down () > win2.app_name.down ()) {
             return 1;
         }
         return -1;
@@ -69,10 +100,12 @@ public class MyApp : Gtk.Application {
                 margin = 6
             };
 
-            var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.BUTTON);
+            var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
+                pixel_size = 24
+            };
             box.pack_start (image, false, false, 0);
 
-            var label = new Gtk.Label (((ForeignWindow)obj).app_id) {
+            var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
                 halign = Gtk.Align.START
             };
             box.pack_start (label, true, true, 0);
