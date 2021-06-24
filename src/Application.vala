@@ -11,6 +11,7 @@ public class MyApp : Gtk.Application {
         );
     }
 
+    public Gtk.ApplicationWindow? main_window { get; set; }
     public ListStore list_store { get; set; }
     public Gee.HashMap<string, ForeignWindow> window_map { get; set; }
     private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
@@ -114,7 +115,14 @@ public class MyApp : Gtk.Application {
     }
 
     protected override void activate () {
-        var main_window = new Gtk.ApplicationWindow (this) {
+        if (main_window != null) {
+            main_window.show ();
+            main_window.deiconify ();
+            main_window.present ();
+            return;
+        }
+
+        main_window = new Gtk.ApplicationWindow (this) {
             default_height = 300,
             default_width = 300,
             title = "Darkbar"
