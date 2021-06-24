@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/org/bluesabre/darkbar/" id="org.bluesabre.darkbar">
+    <key name="known-applications" type="a{sv}">
+      <default>[]</default>
+      <summary>Known applications</summary>
+      <description>Known applications with user-overridden theme settings</description>
+    </key>
+  </schema>
+</schemalist>

@@ -14,6 +14,7 @@ public class MyApp : Gtk.Application {
     public ListStore list_store { get; set; }
     public Gee.HashMap<string, ForeignWindow> window_map { get; set; }
     private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
+    public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
 
     private AppInfo? find_app_info (string app_id) {
@@ -57,7 +58,9 @@ public class MyApp : Gtk.Application {
             icon_name = app_info.get_string ("Icon");
             app_name = app_info.get_name ();
         }
-        var window = new ForeignWindow (app_id, app_name, icon_name, prefers_dark);
+        ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
+        var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark);
+        window.recompute_mode ();
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);
     }
@@ -82,6 +85,34 @@ public class MyApp : Gtk.Application {
         compare_func = function;
     }
 
+    public void store_window (ForeignWindow window) {
+        var dict = new VariantDict(settings.get_value ("known-applications"));
+
+        var variant = new Variant.uint16 ((uint16)window.mode);
+        dict.insert_value (window.app_id, variant);
+
+        settings.set_value ("known-applications", dict.end ());
+    }
+
+    public void forget_window (ForeignWindow window) {
+        var dict = new VariantDict(settings.get_value ("known-applications"));
+
+        dict.remove (window.app_id);
+
+        settings.set_value ("known-applications", dict.end ());
+    }
+
+    public ForeignWindow.DisplayMode retrieve_window_mode (string app_id) {
+        var dict = new VariantDict(settings.get_value ("known-applications"));
+
+        var value = dict.lookup_value (app_id, VariantType.UINT16);
+        if (value != null) {
+            return (ForeignWindow.DisplayMode)value.get_uint16 ();
+        }
+
+        return ForeignWindow.DisplayMode.NONE;
+    }
+
     protected override void activate () {
         var main_window = new Gtk.ApplicationWindow (this) {
             default_height = 300,
@@ -94,6 +125,8 @@ public class MyApp : Gtk.Application {
 
         var listbox = new Gtk.ListBox ();
         set_sort_func (window_sort_function);
+
+        settings = new GLib.Settings ("org.bluesabre.darkbar");
 
         listbox.bind_model ((ListModel)list_store, (obj) => {
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
@@ -115,11 +148,18 @@ public class MyApp : Gtk.Application {
             combo.append ("system", "Follow System Theme");
             combo.append ("light", "Light");
             combo.append ("dark", "Dark");
-            combo.active_id = "none";
+            combo.active_id = ((ForeignWindow)obj).get_mode_string ();
             box.pack_start (combo, false, false, 0);
 
             combo.changed.connect (() => {
                 ((ForeignWindow)obj).set_mode_from_string (combo.active_id);
+
+                if (((ForeignWindow)obj).mode == ForeignWindow.DisplayMode.NONE) {
+                    forget_window ((ForeignWindow)obj);
+                } else {
+                    store_window ((ForeignWindow)obj);
+                }
+
                 return;
             });
 
