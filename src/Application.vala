@@ -40,6 +40,9 @@ public class MyApp : Gtk.Application {
                 }
             }
         }
+        if ("-" in app_id) {
+            return find_app_info (app_id.split("-")[0]);
+        }
         return null;
     }
 
