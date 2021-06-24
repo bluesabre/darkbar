@@ -13,6 +13,7 @@ public class MyApp : Gtk.Application {
 
     public ListStore list_store { get; set; }
     public Gee.HashMap<string, ForeignWindow> window_map { get; set; }
+    private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
     public bool prefers_dark { get; set; }
 
     private string get_icon_name (string app_id) {
@@ -27,13 +28,27 @@ public class MyApp : Gtk.Application {
     public void append (string app_id) {
         var window = new ForeignWindow (app_id, get_icon_name (app_id), prefers_dark);
         window_map[app_id] = window;
-        list_store.append (window);
+        list_store.insert_sorted (window, this.compare_func);
     }
 
     public void update_windows () {
         foreach (var window in window_map.values) {
             window.set_system_dark_mode (prefers_dark);
         }
+    }
+
+    private static int window_sort_function (ForeignWindow win1, ForeignWindow win2) {
+        if (win1.app_id == win2.app_id) {
+            return 0;
+        }
+        if (win1.app_id > win2.app_id) {
+            return 1;
+        }
+        return -1;
+    }
+
+    public void set_sort_func (GLib.CompareDataFunc<ForeignWindow> function) {
+        compare_func = function;
     }
 
     protected override void activate () {
@@ -47,6 +62,8 @@ public class MyApp : Gtk.Application {
         window_map = new Gee.HashMap<string, ForeignWindow> ();
 
         var listbox = new Gtk.ListBox ();
+        set_sort_func (window_sort_function);
+
         listbox.bind_model ((ListModel)list_store, (obj) => {
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
                 margin = 6
