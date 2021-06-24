@@ -138,7 +138,26 @@ public class MyApp : Gtk.Application {
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
 
+        var vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 18) {
+            vexpand = true,
+            margin = 6
+        };
+        main_window.add (vbox);
+
+        var scrolled = new Gtk.ScrolledWindow (null, null) {
+            hexpand = true,
+            vexpand = true,
+            hscrollbar_policy = Gtk.PolicyType.NEVER
+        };
+        var viewport = new Gtk.Viewport (null, null) {
+            hexpand = true,
+            vexpand = true,
+        };
+        scrolled.add (viewport);
+        vbox.pack_start (scrolled, true, true, 0);
+
         var listbox = new Gtk.ListBox ();
+        viewport.add (listbox);
         set_sort_func (window_sort_function);
 
         settings = new GLib.Settings ("org.bluesabre.darkbar");
@@ -184,8 +203,6 @@ public class MyApp : Gtk.Application {
         });
 
         listbox.show_all ();
-
-        main_window.add (listbox);
 
         var granite_settings = Granite.Settings.get_default ();
         prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
