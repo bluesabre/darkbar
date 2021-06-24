@@ -127,6 +127,10 @@ public class MyApp : Gtk.Application {
             default_width = 300,
             title = "Darkbar"
         };
+        main_window.delete_event.connect ((event) => {
+            main_window.hide ();
+            return true;
+        });
 
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
