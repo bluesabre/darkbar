@@ -42,6 +42,10 @@ public class ForeignWindow : GLib.Object {
         return list.contains (xid);
     }
 
+    public bool empty () {
+        return list.size == 0;
+    }
+
     public DisplayMode get_mode_from_string (string modestr) {
         switch (modestr) {
             case "none":

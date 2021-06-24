@@ -211,6 +211,13 @@ public class MyApp : Gtk.Application {
 
             if (window_map.has_key (app_id)) {
                 window_map[app_id].remove_xid (xid);
+                if (window_map[app_id].empty ()) {
+                    uint pos = 0;
+                    if (list_store.find (window_map[app_id], out pos)) {
+                        list_store.remove (pos);
+                    }
+                    window_map.unset (app_id);
+                }
             }
         });
 
