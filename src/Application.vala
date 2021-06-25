@@ -232,6 +232,11 @@ public class MyApp : Gtk.Application {
         });
         grid.attach (swidget, 1, 0, 1, 1);
 
+        var app_prefs = new Hdy.PreferencesGroup () {
+            title = "Active Applications"
+        };
+        vbox.pack_start (app_prefs, true, true, 0);
+
         var scrolled = new Gtk.ScrolledWindow (null, null) {
             hexpand = true,
             vexpand = true,
@@ -242,9 +247,11 @@ public class MyApp : Gtk.Application {
             vexpand = true,
         };
         scrolled.add (viewport);
-        vbox.pack_start (scrolled, true, true, 0);
+        app_prefs.add (scrolled);
 
         var listbox = new Gtk.ListBox ();
+        var ctx = listbox.get_style_context ();
+        ctx.add_class ("content");
         viewport.add (listbox);
         set_sort_func (window_sort_function);
 

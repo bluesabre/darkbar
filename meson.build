@@ -23,6 +23,7 @@ executable(
         dependency('glib-2.0'),
         dependency('gio-unix-2.0'),
         dependency('gee-0.8'),
+        dependency('libhandy-1'),
         dependency('granite', version: '>= 6.0.0'),
         [dependency('libwnck-3.0'), dependency('x11')],
     ],
