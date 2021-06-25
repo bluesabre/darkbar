@@ -79,8 +79,6 @@ public class ForeignWindow : GLib.Object {
     public void recompute_mode () {
         if (mode == DisplayMode.SYSTEM) {
             actual_mode = system_mode;
-        } else if (mode == DisplayMode.NONE) {
-            actual_mode = DisplayMode.LIGHT;
         } else {
             actual_mode = mode;
         }
@@ -107,6 +105,9 @@ public class ForeignWindow : GLib.Object {
     }
 
     public void apply () {
+        if (actual_mode == DisplayMode.NONE) {
+            return;
+        }
         foreach (ulong xid in list) {
             var modestr = "";
             if (actual_mode == DisplayMode.DARK) {
