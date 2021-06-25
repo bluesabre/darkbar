@@ -29,8 +29,8 @@ public class MyApp : Gtk.Application {
         }
 
         main_window = new MainWindow (this) {
-            default_height = 300,
-            default_width = 300,
+            default_height = 500,
+            default_width = 400,
             title = "Darkbar"
         };
 
@@ -44,7 +44,7 @@ public class MyApp : Gtk.Application {
     }
 }
 
-public class MainWindow : Gtk.ApplicationWindow {
+public class MainWindow : Hdy.ApplicationWindow {
 
     public MainWindow (Gtk.Application application) {
         Object (
@@ -79,37 +79,23 @@ public class MainWindow : Gtk.ApplicationWindow {
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
 
-        var vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 18) {
-            vexpand = true,
-            margin = 6
+        var headerbar = new Hdy.HeaderBar () {
+            decoration_layout = "close:maximize",
+            show_close_button = true,
+            has_subtitle = false,
+            title = _("Darkbar")
+        };
+        
+        unowned Gtk.StyleContext headerbar_ctx = headerbar.get_style_context ();
+        headerbar_ctx.add_class ("default-decoration");
+        headerbar_ctx.add_class (Gtk.STYLE_CLASS_FLAT);
+
+        var vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0) {
+            vexpand = true
         };
         add (vbox);
 
-        var grid = new Gtk.Grid () {
-            hexpand = true
-        };
-        vbox.pack_start (grid, false, false, 0);
-
-        var glabel = new Gtk.Label ("Run in the background") {
-            hexpand = true,
-            halign = Gtk.Align.START
-        };
-        grid.attach (glabel, 0, 0, 1, 1);
-        var swidget = new Gtk.Switch () {
-            active = run_in_background
-        };
-        swidget.notify["active"].connect (() => {
-            if (!set_run_at_startup (swidget.active)) {
-                swidget.active = !swidget.active;
-            }
-            run_in_background = swidget.active;
-        });
-        grid.attach (swidget, 1, 0, 1, 1);
-
-        var app_prefs = new Hdy.PreferencesGroup () {
-            title = "Active Applications"
-        };
-        vbox.pack_start (app_prefs, true, true, 0);
+        vbox.pack_start (headerbar, false, false, 0);
 
         var scrolled = new Gtk.ScrolledWindow (null, null) {
             hexpand = true,
@@ -119,14 +105,61 @@ public class MainWindow : Gtk.ApplicationWindow {
         var viewport = new Gtk.Viewport (null, null) {
             hexpand = true,
             vexpand = true,
+            border_width = 12
         };
         scrolled.add (viewport);
-        app_prefs.add (scrolled);
+        vbox.pack_start (scrolled, true, true, 0);
 
-        var listbox = new Gtk.ListBox ();
+        vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 18) {
+            vexpand = true
+        };
+        viewport.add (vbox);
+
+        var darkbar_prefs = new Hdy.PreferencesGroup () {
+            title = "Darkbar Preferences"
+        };
+        vbox.pack_start (darkbar_prefs, false, false, 0);
+
+        var listbox = new Gtk.ListBox () {
+            selection_mode = Gtk.SelectionMode.NONE
+        };
         var ctx = listbox.get_style_context ();
         ctx.add_class ("content");
-        viewport.add (listbox);
+        darkbar_prefs.add (listbox);
+
+        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 6
+        };
+        listbox.insert (hbox, 0);
+
+        var glabel = new Gtk.Label ("Run in the background") {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        hbox.pack_start (glabel, true, true, 0);
+
+        var swidget = new Gtk.Switch () {
+            active = run_in_background
+        };
+        swidget.notify["active"].connect (() => {
+            if (!set_run_at_startup (swidget.active)) {
+                swidget.active = !swidget.active;
+            }
+            run_in_background = swidget.active;
+        });
+        hbox.pack_start (swidget, false, false, 0);
+
+        var app_prefs = new Hdy.PreferencesGroup () {
+            title = "Active Applications"
+        };
+        vbox.pack_start (app_prefs, true, true, 0);
+
+        listbox = new Gtk.ListBox () {
+            selection_mode = Gtk.SelectionMode.NONE
+        };
+        ctx = listbox.get_style_context ();
+        ctx.add_class ("content");
+        app_prefs.add (listbox);
         set_sort_func (window_sort_function);
 
         settings = new GLib.Settings ("org.bluesabre.darkbar");
@@ -174,9 +207,11 @@ public class MainWindow : Gtk.ApplicationWindow {
         listbox.show_all ();
 
         var granite_settings = Granite.Settings.get_default ();
-        prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+        var gtk_settings = Gtk.Settings.get_default ();
+
+        gtk_settings.gtk_application_prefer_dark_theme = prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
         granite_settings.notify["prefers-color-scheme"].connect (() => {
-            prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+            gtk_settings.gtk_application_prefer_dark_theme = prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
             update_windows ();
         });
 
