@@ -61,6 +61,12 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool prefers_dark { get; set; }
     public bool run_in_background { get; set; }
 
+    public string[] ignore_apps = {
+        "io.elementary.wingpanel",
+        "org.bluesabre.darkbar",
+        "plank"
+    };
+
     static construct {
         Hdy.init ();
     }
@@ -219,6 +225,10 @@ public class MainWindow : Hdy.ApplicationWindow {
         screen.window_opened.connect ((window) => {
             ulong xid = window.get_xid ();
             unowned string app_id = window.get_class_instance_name ();
+
+            if (app_id in ignore_apps) {
+                return;
+            }
 
             if (!window_map.has_key (app_id)) {
                 append (app_id);
