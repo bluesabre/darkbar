@@ -84,9 +84,10 @@ public class MainWindow : Hdy.ApplicationWindow {
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
+        resizable = false;
 
         var headerbar = new Hdy.HeaderBar () {
-            decoration_layout = "close:maximize",
+            decoration_layout = "close:",
             show_close_button = true,
             has_subtitle = false,
             title = _("Darkbar")
@@ -121,6 +122,19 @@ public class MainWindow : Hdy.ApplicationWindow {
         };
         viewport.add (vbox);
 
+        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 12
+        };
+        var img = new Gtk.Image.from_icon_name ("dialog-information", Gtk.IconSize.DIALOG);
+        hbox.pack_start(img, false, false, 0);
+
+        var glabel = new Gtk.Label ("Darkbar allows you to override the window decorations for applications not using client-side decorations. Not all applications are supported.") {
+            wrap = true,
+            wrap_mode = Pango.WrapMode.WORD
+        };
+        hbox.pack_start(glabel, false, false, 0);
+        vbox.pack_start(hbox, false, false, 0);
+
         var darkbar_prefs = new Hdy.PreferencesGroup () {
             title = "Darkbar Preferences"
         };
@@ -133,12 +147,12 @@ public class MainWindow : Hdy.ApplicationWindow {
         ctx.add_class ("content");
         darkbar_prefs.add (listbox);
 
-        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+        hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
             margin = 6
         };
         listbox.insert (hbox, 0);
 
-        var glabel = new Gtk.Label ("Run in the background") {
+        glabel = new Gtk.Label ("Run in the background") {
             hexpand = true,
             halign = Gtk.Align.START
         };
