@@ -4,11 +4,18 @@
  */
 
 public class MyApp : Gtk.Application {
-    public MyApp () {
-        Object (
-            application_id: "org.bluesabre.darkbar",
-            flags: ApplicationFlags.FLAGS_NONE
-        );
+    public const OptionEntry[] INSTALLER_OPTIONS = {
+        { "startup", 's', 0, OptionArg.NONE, out startup_mode, "Run minimized at session startup", null},
+        { null }
+    };
+
+    public static bool startup_mode;
+
+    construct {
+        application_id = "org.bluesabre.darkbar";
+        flags = ApplicationFlags.FLAGS_NONE;
+        Intl.setlocale (LocaleCategory.ALL, "");
+        add_main_option_entries (INSTALLER_OPTIONS);
     }
 
     public Gtk.ApplicationWindow? main_window { get; set; }
@@ -17,6 +24,7 @@ public class MyApp : Gtk.Application {
     private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
     public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
+    public bool run_in_background { get; set; }
 
     private AppInfo? find_app_info (string app_id) {
         List<AppInfo> app_infos = AppInfo.get_all ();
@@ -117,9 +125,64 @@ public class MyApp : Gtk.Application {
         return ForeignWindow.DisplayMode.NONE;
     }
 
+    public bool get_run_at_startup () {
+        var desktop_filename = "org.bluesabre.darkbar.desktop";
+        var target_filename = Environment.get_home_dir () + "/.config/autostart/" + desktop_filename;
+        File file = File.new_for_path (target_filename);
+        if (file.query_exists (null)) {
+            return true;
+        }
+        return false;
+    }
+
+    public bool set_run_at_startup (bool startup) {
+        var desktop_filename = "org.bluesabre.darkbar.desktop";
+        var target_filename = Environment.get_home_dir () + "/.config/autostart/" + desktop_filename;
+        if (startup) {
+            var app_info = new DesktopAppInfo (desktop_filename);
+            if (app_info != null) {
+                var filename = app_info.get_filename ();
+                var keyfile = new KeyFile ();
+                try {
+                    if (keyfile.load_from_file (filename, KeyFileFlags.NONE)) {
+                        var exec = keyfile.get_string ("Desktop Entry", "Exec");
+                        keyfile.set_string ("Desktop Entry", "Exec", exec + " --startup");
+                        if (keyfile.save_to_file (target_filename)) {
+                            return true;
+                        } else {
+                            warning ("Failed to save autostart file: %s", target_filename);
+                        }
+                    } else {
+                        warning ("Failed to load desktop file: %s", filename);
+                    }
+                } catch (Error e) {
+                    warning ("Failed to load desktop file: %s (%s)", filename, e.message);
+                }
+            } else {
+                warning ("Could not locate desktop file: %s", desktop_filename);
+            }
+            return false;
+        } else {
+            File file = File.new_for_path (target_filename);
+            if (file.query_exists (null)) {
+                try {
+                    if (file.delete ()) {
+                        return true;
+                    } else {
+                        warning ("Failed to delete autostart file: %s", target_filename);
+                    }
+                } catch (Error e) {
+                    warning ("Failed to delete autostart file: %s (%s)", target_filename, e.message);
+                }
+                return false;
+            }
+            return true;
+        }
+    }
+
     protected override void activate () {
         if (main_window != null) {
-            main_window.show ();
+            main_window.show_all ();
             main_window.deiconify ();
             main_window.present ();
             return;
@@ -131,18 +194,43 @@ public class MyApp : Gtk.Application {
             title = "Darkbar"
         };
         main_window.delete_event.connect ((event) => {
-            main_window.hide ();
-            return true;
+            if (run_in_background) {
+                main_window.hide ();
+                return true;
+            }
+            return false;
         });
 
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
+        run_in_background = get_run_at_startup ();
 
         var vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 18) {
             vexpand = true,
             margin = 6
         };
         main_window.add (vbox);
+
+        var grid = new Gtk.Grid () {
+            hexpand = true
+        };
+        vbox.pack_start (grid, false, false, 0);
+
+        var glabel = new Gtk.Label ("Run in the background") {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        grid.attach (glabel, 0, 0, 1, 1);
+        var swidget = new Gtk.Switch () {
+            active = run_in_background
+        };
+        swidget.notify["active"].connect (() => {
+            if (!set_run_at_startup (swidget.active)) {
+                swidget.active = !swidget.active;
+            }
+            run_in_background = swidget.active;
+        });
+        grid.attach (swidget, 1, 0, 1, 1);
 
         var scrolled = new Gtk.ScrolledWindow (null, null) {
             hexpand = true,
@@ -238,7 +326,9 @@ public class MyApp : Gtk.Application {
             }
         });
 
-        main_window.show_all ();
+        if (!startup_mode) {
+            main_window.show_all ();
+        }
     }
 
     public static int main (string[] args) {
