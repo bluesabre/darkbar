@@ -2,15 +2,36 @@
 <!-- Copyright 2021 Sean Davis <sean@bluesabre.org> -->
 <component type="desktop">
   <id>org.bluesabre.darkbar</id>
+  <content_rating type="oars-1.0" />
   <metadata_license>CC0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
   <name>Darkbar</name>
+  <developer_name>Sean Davis</developer_name>
   <summary>Darken application titlebars based on your preference</summary>
+
   <description>
-    <p></p>
+    <p>Darkbar replaces window decorations with your preference of a dark or light theme variant.</p>
+    <p>It allows the following settings for each application:</p>
+    <ul>
+      <li>None: Let the application decide</li>
+      <li>Follow System Theme: Use the same theme as the operating system</li>
+      <li>Light: Prefer the "light" theme variant</li>
+      <li>Dark: Prefer the "dark" theme variant</li>
+    </ul>
+    <p>Only applications using traditional decorations are supported. If your app is unaffected by Darkbar, the application controls its window decorations.</p>
   </description>
+
+  <launchable type="desktop-id">org.bluesabre.darkbar.desktop</launchable>
+
+  <url type="homepage">https://github.com/bluesabre/darkbar</url>
+
+  <provides>
+    <binary>org.bluesabre.darkbar</binary>
+  </provides>
+
   <custom>
     <value key="x-appcenter-color-primary">#2a2a2a</value>
     <value key="x-appcenter-color-primary-text">rgb(255, 255, 255)</value>
-    <value key="x-appcenter-suggested-price">5</value>
+    <value key="x-appcenter-suggested-price">2</value>
   </custom>
 </component>

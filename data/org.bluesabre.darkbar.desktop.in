@@ -2,7 +2,7 @@
 Name=Darkbar
 GenericName=Darkbar App
 Comment=Darken application titlebars based on your preference
-Categories=Utility;
+Categories=Settings;DesktopSettings;
 Exec=org.bluesabre.darkbar
 Icon=org.bluesabre.darkbar
 Terminal=false
