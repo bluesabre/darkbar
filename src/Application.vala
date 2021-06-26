@@ -268,30 +268,55 @@ public class MainWindow : Hdy.ApplicationWindow {
 
     }
 
-    private AppInfo? find_app_info (string app_id) {
+    private string? find_app_info (string app_id) {
+        var apps = new Gee.HashMap<string, uint> ();
         List<AppInfo> app_infos = AppInfo.get_all ();
         foreach (AppInfo app_info in app_infos) {
+            var score = 0;
             var id = app_info.get_id ();
             if (id.has_suffix (".desktop")) {
+                var desktop_id = id.dup ();
                 id = id.substring(0, id.length - 8);
+                if (id.down () == app_id) {
+                    return desktop_id;
+                }
+
                 var idx = id.index_of (".");
                 if (idx != -1) {
-                    // RDN
+                    // RDN, break it apart and traverse in reverse
                     id = id.substring(idx + 1);
-                    foreach (var subid in id.down ().split (".")) {
+                    var subids = id.down ().split (".");
+                    for (var i = subids.length - 1; i >= 0; i--) {
+                        var subid = subids[i];
                         if (subid == app_id) {
-                            return app_info;
+                            apps[desktop_id] = score;
+                            break;
                         }
+                        score++;
                     }
                     continue;
                 }
-                if (id.down () == app_id) {
-                    return app_info;
-                }
             }
         }
+
+        // App with the lowest score (most accurate match) wins
+        if (apps.size > 0) {
+            string? best = null;
+            uint best_score = 99;
+            foreach (var entry in apps.entries) {
+                if (entry.value < best_score) {
+                    best_score = entry.value;
+                    best = entry.key;
+                }
+            }
+            return best;
+        }
+
         if ("-" in app_id) {
-            return find_app_info (app_id.split("-")[0]);
+            string[] sublist = app_id.split("-");
+            sublist = sublist[0:sublist.length - 1];
+            var sub_app_id = string.joinv ("-", sublist);
+            return find_app_info (sub_app_id);
         }
         return null;
     }
@@ -299,18 +324,24 @@ public class MainWindow : Hdy.ApplicationWindow {
     private DesktopAppInfo? get_app_info (string app_id) {
         var app_info = new DesktopAppInfo (app_id + ".desktop");
         if (app_info == null) {
-            app_info = (DesktopAppInfo)find_app_info (app_id);
+            string? desktop_app_id = find_app_info (app_id);
+            if (desktop_app_id != null) {
+                app_info = new DesktopAppInfo (desktop_app_id);
+            }
         }
         return app_info;
     }
 
     public void append (string app_id) {
         var app_info = get_app_info (app_id);
-        var icon_name = "image-missing";
+        string? icon_name = null;
         var app_name = app_id;
         if (app_info != null) {
             icon_name = app_info.get_string ("Icon");
             app_name = app_info.get_name ();
+        }
+        if (icon_name == null) {
+            icon_name = "application-default-icon";
         }
         ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
         var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark);
