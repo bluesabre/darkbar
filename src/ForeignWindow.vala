@@ -19,9 +19,10 @@ public class ForeignWindow : GLib.Object {
     public DisplayMode system_mode { get; set; }
     public DisplayMode actual_mode { get; set; }
     public Gee.HashSet<ulong> list { get; set; }
+    public bool sandboxed { get; set; }
 
-    public ForeignWindow (string app_id, string app_name, string icon_name, DisplayMode mode, bool prefers_dark) {
-        Object (app_id: app_id, app_name: app_name, icon_name: icon_name, mode: mode, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT);
+    public ForeignWindow (string app_id, string app_name, string icon_name, DisplayMode mode, bool prefers_dark, bool sandboxed) {
+        Object (app_id: app_id, app_name: app_name, icon_name: icon_name, mode: mode, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT, sandboxed: sandboxed);
     }
 
     construct {
@@ -113,7 +114,11 @@ public class ForeignWindow : GLib.Object {
             if (actual_mode == DisplayMode.DARK) {
                 modestr = "dark";
             }
-            var cmd = "xprop -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT '%s'".printf (xid, modestr);
+            var xprop = "xprop";
+            if (sandboxed) {
+                xprop = "/var/run/host/bin/xprop";
+            }
+            var cmd = "%s -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT '%s'".printf (xprop, xid, modestr);
             try {
                 GLib.Process.spawn_command_line_async (cmd);
             } catch (GLib.SpawnError e) {

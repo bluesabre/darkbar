@@ -59,6 +59,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     private unowned GLib.CompareDataFunc<ForeignWindow> compare_func;
     public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
+    public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
 
     public string[] ignore_apps = {
@@ -85,6 +86,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
         resizable = false;
+
+        File file = File.new_for_path ("/var/run/host");
+        if (file.query_exists (null)) {
+            sandboxed = true;
+        }
 
         var headerbar = new Hdy.HeaderBar () {
             decoration_layout = "close:",
@@ -344,7 +350,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             icon_name = "application-default-icon";
         }
         ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
-        var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark);
+        var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark, sandboxed);
         window.recompute_mode ();
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);
