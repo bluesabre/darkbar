@@ -1,6 +1,17 @@
 # Darkbar
 
-![Screenshot](data/screenshots@1x.png?raw=true)
+![Screenshot](data/screenshots/1x.png?raw=true)
+
+**Darkbar** replaces window decorations with your preference of a dark or light theme variant.
+
+It allows the following settings for each application:
+
+- None: Let the application decide</li>
+- Follow System Theme: Use the same theme as the operating system
+- Light: Prefer the "light" theme variant
+- Dark: Prefer the "dark" theme variant
+
+Only applications using traditional decorations are supported. If your app is unaffected by Darkbar, the application controls its window decorations.
 
 ## Building, Testing, and Installation
 
