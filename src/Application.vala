@@ -98,7 +98,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             has_subtitle = false,
             title = _("Darkbar")
         };
-        
+
         unowned Gtk.StyleContext headerbar_ctx = headerbar.get_style_context ();
         headerbar_ctx.add_class ("default-decoration");
         headerbar_ctx.add_class (Gtk.STYLE_CLASS_FLAT);
@@ -132,14 +132,16 @@ public class MainWindow : Hdy.ApplicationWindow {
             margin = 12
         };
         var img = new Gtk.Image.from_icon_name ("org.bluesabre.darkbar", Gtk.IconSize.DIALOG);
-        hbox.pack_start(img, false, false, 0);
+        hbox.pack_start (img, false, false, 0);
 
-        var glabel = new Gtk.Label (_("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.")) {
+        var glabel = new Gtk.Label (
+            _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.")
+        ) {
             wrap = true,
             wrap_mode = Pango.WrapMode.WORD
         };
-        hbox.pack_start(glabel, false, false, 0);
-        vbox.pack_start(hbox, false, false, 0);
+        hbox.pack_start (glabel, false, false, 0);
+        vbox.pack_start (hbox, false, false, 0);
 
         var darkbar_prefs = new Hdy.PreferencesGroup () {
             title = _("Darkbar Preferences")
@@ -235,9 +237,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         var granite_settings = Granite.Settings.get_default ();
         var gtk_settings = Gtk.Settings.get_default ();
 
-        gtk_settings.gtk_application_prefer_dark_theme = prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+        prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+        gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
         granite_settings.notify["prefers-color-scheme"].connect (() => {
-            gtk_settings.gtk_application_prefer_dark_theme = prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+            prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+            gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
             update_windows ();
         });
 
@@ -282,7 +286,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             var id = app_info.get_id ();
             if (id.has_suffix (".desktop")) {
                 var desktop_id = id.dup ();
-                id = id.substring(0, id.length - 8);
+                id = id.substring (0, id.length - 8);
                 if (id.down () == app_id) {
                     return desktop_id;
                 }
@@ -290,7 +294,7 @@ public class MainWindow : Hdy.ApplicationWindow {
                 var idx = id.index_of (".");
                 if (idx != -1) {
                     // RDN, break it apart and traverse in reverse
-                    id = id.substring(idx + 1);
+                    id = id.substring (idx + 1);
                     var subids = id.down ().split (".");
                     for (var i = subids.length - 1; i >= 0; i--) {
                         var subid = subids[i];
@@ -319,7 +323,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         }
 
         if ("-" in app_id) {
-            string[] sublist = app_id.split("-");
+            string[] sublist = app_id.split ("-");
             sublist = sublist[0:sublist.length - 1];
             var sub_app_id = string.joinv ("-", sublist);
             return find_app_info (sub_app_id);
@@ -377,7 +381,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     public void store_window (ForeignWindow window) {
-        var dict = new VariantDict(settings.get_value ("known-applications"));
+        var dict = new VariantDict (settings.get_value ("known-applications"));
 
         var variant = new Variant.uint16 ((uint16)window.mode);
         dict.insert_value (window.app_id, variant);
@@ -386,7 +390,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     public void forget_window (ForeignWindow window) {
-        var dict = new VariantDict(settings.get_value ("known-applications"));
+        var dict = new VariantDict (settings.get_value ("known-applications"));
 
         dict.remove (window.app_id);
 
@@ -394,7 +398,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     public ForeignWindow.DisplayMode retrieve_window_mode (string app_id) {
-        var dict = new VariantDict(settings.get_value ("known-applications"));
+        var dict = new VariantDict (settings.get_value ("known-applications"));
 
         var value = dict.lookup_value (app_id, VariantType.UINT16);
         if (value != null) {

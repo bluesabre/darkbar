@@ -21,8 +21,18 @@ public class ForeignWindow : GLib.Object {
     public Gee.HashSet<ulong> list { get; set; }
     public bool sandboxed { get; set; }
 
-    public ForeignWindow (string app_id, string app_name, string icon_name, DisplayMode mode, bool prefers_dark, bool sandboxed) {
-        Object (app_id: app_id, app_name: app_name, icon_name: icon_name, mode: mode, system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT, sandboxed: sandboxed);
+    public ForeignWindow (string app_id,
+                          string app_name,
+                          string icon_name,
+                          DisplayMode mode,
+                          bool prefers_dark,
+                          bool sandboxed) {
+        Object (app_id: app_id,
+                app_name: app_name,
+                icon_name: icon_name,
+                mode: mode,
+                system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT,
+                sandboxed: sandboxed);
     }
 
     construct {
