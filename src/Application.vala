@@ -125,10 +125,10 @@ public class MainWindow : Hdy.ApplicationWindow {
         var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
             margin = 12
         };
-        var img = new Gtk.Image.from_icon_name ("dialog-information", Gtk.IconSize.DIALOG);
+        var img = new Gtk.Image.from_icon_name ("org.bluesabre.darkbar", Gtk.IconSize.DIALOG);
         hbox.pack_start(img, false, false, 0);
 
-        var glabel = new Gtk.Label ("Darkbar allows you to override the window decorations for applications not using client-side decorations. Not all applications are supported.") {
+        var glabel = new Gtk.Label (_("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.")) {
             wrap = true,
             wrap_mode = Pango.WrapMode.WORD
         };
@@ -136,7 +136,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         vbox.pack_start(hbox, false, false, 0);
 
         var darkbar_prefs = new Hdy.PreferencesGroup () {
-            title = "Darkbar Preferences"
+            title = _("Darkbar Preferences")
         };
         vbox.pack_start (darkbar_prefs, false, false, 0);
 
@@ -152,7 +152,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         };
         listbox.insert (hbox, 0);
 
-        glabel = new Gtk.Label ("Run in the background") {
+        glabel = new Gtk.Label (_("Run in the background")) {
             hexpand = true,
             halign = Gtk.Align.START
         };
@@ -170,7 +170,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         hbox.pack_start (swidget, false, false, 0);
 
         var app_prefs = new Hdy.PreferencesGroup () {
-            title = "Active Applications"
+            title = _("Active Applications")
         };
         vbox.pack_start (app_prefs, true, true, 0);
 
@@ -200,10 +200,10 @@ public class MainWindow : Hdy.ApplicationWindow {
             box.pack_start (label, true, true, 0);
 
             var combo = new Gtk.ComboBoxText ();
-            combo.append ("none", "None");
-            combo.append ("system", "Follow System Theme");
-            combo.append ("light", "Light");
-            combo.append ("dark", "Dark");
+            combo.append ("none", _("None"));
+            combo.append ("system", _("Follow System Theme"));
+            combo.append ("light", _("Light"));
+            combo.append ("dark", _("Dark"));
             combo.active_id = ((ForeignWindow)obj).get_mode_string ();
             box.pack_start (combo, false, false, 0);
 
