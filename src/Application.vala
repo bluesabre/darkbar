@@ -425,6 +425,9 @@ public class MainWindow : Hdy.ApplicationWindow {
                 try {
                     if (keyfile.load_from_file (filename, KeyFileFlags.NONE)) {
                         var exec = keyfile.get_string ("Desktop Entry", "Exec");
+                        if (sandboxed) {
+                            exec = "flatpak run org.bluesabre.darkbar";
+                        }
                         keyfile.set_string ("Desktop Entry", "Exec", exec + " --startup");
                         if (keyfile.save_to_file (target_filename)) {
                             return true;
