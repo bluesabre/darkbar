@@ -1,0 +1,28 @@
+Source: org.bluesabre.darkbar
+Section: x11
+Priority: optional
+Maintainer: Sean Davis <sean@bluesabre.org>
+Build-Depends: debhelper (>= 11),
+               debhelper-compat (= 12),
+               libglib2.0-dev (>= 2.64),
+               libgranite-dev (>= 6.0),
+               libgtk-3-dev (>= 3.24),
+               libgee-0.8-dev (>= 0.20),
+               libhandy-1-dev (>= 1.2),
+               libwnck-3-dev (>= 3.36),
+               meson,
+               valac (>= 0.40.0)
+Standards-Version: 4.5.0
+Rules-Requires-Root: no
+
+Package: org.bluesabre.darkbar
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Darken application titlebars based on your preference
+ Darkbar replaces window decorations with your preference of a dark or light
+ theme variant. It allows the following settings for each application:
+ .
+  - None: Let the application decide
+  - Follow System Theme: Use the same theme as the operating system
+  - Light: Prefer the "light" theme variant
+  - Dark: Prefer the "dark" theme variant

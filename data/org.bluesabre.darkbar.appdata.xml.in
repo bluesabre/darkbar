@@ -3,7 +3,7 @@
 <component type="desktop">
   <id>org.bluesabre.darkbar</id>
   <content_rating type="oars-1.0" />
-  <metadata_license>CC0</metadata_license>
+  <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>Darkbar</name>
   <developer_name>Sean Davis</developer_name>
