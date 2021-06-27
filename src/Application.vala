@@ -74,14 +74,6 @@ public class MainWindow : Hdy.ApplicationWindow {
 
     construct {
 
-        delete_event.connect ((event) => {
-            if (run_in_background) {
-                hide ();
-                return true;
-            }
-            return false;
-        });
-
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
@@ -128,21 +120,6 @@ public class MainWindow : Hdy.ApplicationWindow {
         };
         viewport.add (vbox);
 
-        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
-            margin = 12
-        };
-        var img = new Gtk.Image.from_icon_name ("org.bluesabre.darkbar", Gtk.IconSize.DIALOG);
-        hbox.pack_start (img, false, false, 0);
-
-        var glabel = new Gtk.Label (
-            _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.")
-        ) {
-            wrap = true,
-            wrap_mode = Pango.WrapMode.WORD
-        };
-        hbox.pack_start (glabel, false, false, 0);
-        vbox.pack_start (hbox, false, false, 0);
-
         var darkbar_prefs = new Hdy.PreferencesGroup () {
             title = _("Darkbar Preferences")
         };
@@ -155,12 +132,12 @@ public class MainWindow : Hdy.ApplicationWindow {
         ctx.add_class ("content");
         darkbar_prefs.add (listbox);
 
-        hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
             margin = 6
         };
         listbox.insert (hbox, 0);
 
-        glabel = new Gtk.Label (_("Run in the background")) {
+        var glabel = new Gtk.Label (_("Run in the background")) {
             hexpand = true,
             halign = Gtk.Align.START
         };
@@ -276,6 +253,40 @@ public class MainWindow : Hdy.ApplicationWindow {
             }
         });
 
+        show.connect (() => {
+            if (settings.get_boolean ("show-welcome")) {
+                show_welcome_dialog ();
+            }
+        });
+
+        delete_event.connect ((event) => {
+            if (run_in_background) {
+                hide ();
+                return true;
+            }
+            return false;
+        });
+
+    }
+
+    private void show_welcome_dialog () {
+        var dialog = new Granite.MessageDialog.with_image_from_icon_name (
+            _("Thank you for using Darkbar!"),
+            _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported."),
+            "org.bluesabre.darkbar"
+        );
+
+        var custom_widget = new Gtk.CheckButton.with_label ("Show this dialog next time.");
+        custom_widget.show ();
+
+        settings.bind ("show-welcome", custom_widget, "active", GLib.SettingsBindFlags.DEFAULT);
+
+        dialog.response.connect (() => {
+            dialog.destroy ();
+        });
+
+        dialog.custom_bin.add (custom_widget);
+        dialog.show ();
     }
 
     private string? find_app_info (string app_id) {

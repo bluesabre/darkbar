@@ -6,5 +6,10 @@
       <summary>Known applications</summary>
       <description>Known applications with user-overridden theme settings</description>
     </key>
+    <key name="show-welcome" type="b">
+      <default>true</default>
+      <summary>Show welcome dialog</summary>
+      <description>Show the welcome dialog when Darkbar is first displayed</description>
+    </key>
   </schema>
 </schemalist>
