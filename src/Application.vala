@@ -430,8 +430,14 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     public bool set_run_at_startup (bool startup) {
+        var autostart_dir = Environment.get_home_dir () + "/.config/autostart/";
+        if (GLib.DirUtils.create_with_parents (autostart_dir, 0775) == -1) {
+            warning ("Failed to create autostart directory: %s", autostart_dir);
+            return false;
+        }
+
         var desktop_filename = "org.bluesabre.darkbar.desktop";
-        var target_filename = Environment.get_home_dir () + "/.config/autostart/" + desktop_filename;
+        var target_filename = autostart_dir + desktop_filename;
         if (startup) {
             var app_info = new DesktopAppInfo (desktop_filename);
             if (app_info != null) {
