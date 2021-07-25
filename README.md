@@ -29,7 +29,7 @@ Run `meson build` to configure the build environment. Change to the build direct
     cd build
     ninja
 
-To install, use `ninja install`, then execute with `org.bluesabre.darkbar`
+To install, use `ninja install`, then execute with `com.github.bluesabre.darkbar`
 
     sudo ninja install
-    org.bluesabre.darkbar
+    com.github.bluesabre.darkbar

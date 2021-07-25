@@ -12,7 +12,7 @@ public class MyApp : Gtk.Application {
     public static bool startup_mode;
 
     construct {
-        application_id = "org.bluesabre.darkbar";
+        application_id = "com.github.bluesabre.darkbar";
         flags = ApplicationFlags.FLAGS_NONE;
         Intl.setlocale (LocaleCategory.ALL, "");
         add_main_option_entries (INSTALLER_OPTIONS);
@@ -49,7 +49,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            icon_name: "org.bluesabre.darkbar",
+            icon_name: "com.github.bluesabre.darkbar",
             title: _("Darkbar")
         );
     }
@@ -64,7 +64,7 @@ public class MainWindow : Hdy.ApplicationWindow {
 
     public string[] ignore_apps = {
         "io.elementary.wingpanel",
-        "org.bluesabre.darkbar",
+        "com.github.bluesabre.darkbar",
         "plank"
     };
 
@@ -167,7 +167,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         app_prefs.add (listbox);
         set_sort_func (window_sort_function);
 
-        settings = new GLib.Settings ("org.bluesabre.darkbar");
+        settings = new GLib.Settings ("com.github.bluesabre.darkbar");
 
         listbox.bind_model ((ListModel)list_store, (obj) => {
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
@@ -273,7 +273,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         var dialog = new Granite.MessageDialog.with_image_from_icon_name (
             _("Thank you for using Darkbar!"),
             _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported."),
-            "org.bluesabre.darkbar"
+            "com.github.bluesabre.darkbar"
         );
 
         var custom_widget = new Gtk.CheckButton.with_label ("Show this dialog next time.");
@@ -420,7 +420,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     public bool get_run_at_startup () {
-        var desktop_filename = "org.bluesabre.darkbar.desktop";
+        var desktop_filename = "com.github.bluesabre.darkbar.desktop";
         var target_filename = Environment.get_home_dir () + "/.config/autostart/" + desktop_filename;
         File file = File.new_for_path (target_filename);
         if (file.query_exists (null)) {
@@ -436,7 +436,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         }
 
-        var desktop_filename = "org.bluesabre.darkbar.desktop";
+        var desktop_filename = "com.github.bluesabre.darkbar.desktop";
         var target_filename = autostart_dir + desktop_filename;
         if (startup) {
             var app_info = new DesktopAppInfo (desktop_filename);
@@ -447,7 +447,7 @@ public class MainWindow : Hdy.ApplicationWindow {
                     if (keyfile.load_from_file (filename, KeyFileFlags.NONE)) {
                         var exec = keyfile.get_string ("Desktop Entry", "Exec");
                         if (sandboxed) {
-                            exec = "flatpak run org.bluesabre.darkbar";
+                            exec = "flatpak run com.github.bluesabre.darkbar";
                         }
                         keyfile.set_string ("Desktop Entry", "Exec", exec + " --startup");
                         if (keyfile.save_to_file (target_filename)) {

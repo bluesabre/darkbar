@@ -1,5 +1,5 @@
 # project name and programming language
-project('org.bluesabre.darkbar', 'vala', 'c')
+project('com.github.bluesabre.darkbar', 'vala', 'c')
 
 # Include the translations module
 i18n = import('i18n')
@@ -32,7 +32,7 @@ executable(
 
 #Translate and install our .desktop file
 i18n.merge_file(
-    input: 'data' / 'org.bluesabre.darkbar.desktop.in',
+    input: 'data' / 'com.github.bluesabre.darkbar.desktop.in',
     output: meson.project_name() + '.desktop',
     po_dir: meson.source_root() / 'po',
     type: 'desktop',
@@ -42,7 +42,7 @@ i18n.merge_file(
 
 #Translate and install our .appdata file
 i18n.merge_file(
-    input: 'data' / 'org.bluesabre.darkbar.appdata.xml.in',
+    input: 'data' / 'com.github.bluesabre.darkbar.appdata.xml.in',
     output: meson.project_name() + '.appdata.xml',
     po_dir: meson.source_root() / 'po',
     install: true,

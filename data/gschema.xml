@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="/org/bluesabre/darkbar/" id="org.bluesabre.darkbar">
+  <schema path="/com/github/bluesabre/darkbar/" id="com.github.bluesabre.darkbar">
     <key name="known-applications" type="a{sv}">
       <default>[]</default>
       <summary>Known applications</summary>

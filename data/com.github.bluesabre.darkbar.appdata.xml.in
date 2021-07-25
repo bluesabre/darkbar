@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2021 Sean Davis <sean@bluesabre.org> -->
 <component type="desktop">
-  <id>org.bluesabre.darkbar</id>
+  <id>com.github.bluesabre.darkbar</id>
   <content_rating type="oars-1.0" />
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
@@ -21,14 +21,14 @@
     <p>Only applications using traditional decorations are supported. If your app is unaffected by Darkbar, the application controls its window decorations.</p>
   </description>
 
-  <launchable type="desktop-id">org.bluesabre.darkbar.desktop</launchable>
+  <launchable type="desktop-id">com.github.bluesabre.darkbar.desktop</launchable>
 
   <url type="homepage">https://github.com/bluesabre/darkbar</url>
   <url type="bugtracker">https://github.com/bluesabre/darkbar/issues</url>
   <url type="donation">https://github.com/sponsors/bluesabre</url>
 
   <provides>
-    <binary>org.bluesabre.darkbar</binary>
+    <binary>com.github.bluesabre.darkbar</binary>
   </provides>
 
   <screenshots>

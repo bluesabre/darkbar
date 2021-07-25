@@ -1,4 +1,4 @@
-Source: org.bluesabre.darkbar
+Source: com.github.bluesabre.darkbar
 Section: x11
 Priority: optional
 Maintainer: Sean Davis <sean@bluesabre.org>
@@ -15,7 +15,7 @@ Build-Depends: debhelper (>= 11),
 Standards-Version: 4.5.0
 Rules-Requires-Root: no
 
-Package: org.bluesabre.darkbar
+Package: com.github.bluesabre.darkbar
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Darken application titlebars based on your preference

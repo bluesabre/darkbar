@@ -1,3 +1,3 @@
 src/Application.vala
-data/org.bluesabre.darkbar.desktop.in
-data/org.bluesabre.darkbar.appdata.xml.in
+data/com.github.bluesabre.darkbar.desktop.in
+data/com.github.bluesabre.darkbar.appdata.xml.in

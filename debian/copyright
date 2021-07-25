@@ -6,7 +6,7 @@ Files: *
 Copyright: 2021 Sean Davis <sean@bluesabre.org>
 License: GPL-3.0+
 
-Files: data/org.bluesabre.darkbar.appdata.xml.in
+Files: data/com.github.bluesabre.darkbar.appdata.xml.in
 Copyright: 2021 Sean Davis <sean@bluesabre.org>
 License: CC0-1.0
 
