@@ -42,5 +42,6 @@
     <value key="x-appcenter-color-primary">#2a2a2a</value>
     <value key="x-appcenter-color-primary-text">rgb(255, 255, 255)</value>
     <value key="x-appcenter-suggested-price">2</value>
+    <value key="x-appcenter-stripe">pk_live_51JLp3FGKVohAr7ohMeXKOPLPN9ro55i3PTNLqrxgquK53zt41ZQ2N7jVbi4tA93zuy1bhXwG4EJ1AEhKw9T86qtl00NXvlJ8fO</value>
   </custom>
 </component>
