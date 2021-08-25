@@ -62,6 +62,9 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
 
+    private int delay = 100;
+    private uint timeout_id;
+
     public string[] ignore_apps = {
         "io.elementary.wingpanel",
         "com.github.bluesabre.darkbar",
@@ -224,17 +227,15 @@ public class MainWindow : Hdy.ApplicationWindow {
 
         var screen = Wnck.Screen.get_default ();
         screen.window_opened.connect ((window) => {
-            ulong xid = window.get_xid ();
             unowned string app_id = window.get_class_instance_name ();
-
-            if (app_id in ignore_apps) {
-                return;
+            if (app_id == null) {
+                if(timeout_id > 0) {
+                    Source.remove(timeout_id);
+                }
+                timeout_id = Timeout.add(delay, add_all_windows);
+            } else {
+                add_window (window);
             }
-
-            if (!window_map.has_key (app_id)) {
-                append (app_id);
-            }
-            window_map[app_id].add_xid (xid);
         });
 
         screen.window_closed.connect ((window) => {
@@ -267,6 +268,29 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private bool add_all_windows () {
+        var screen = Wnck.Screen.get_default ();
+        unowned List<Wnck.Window> windows = screen.get_windows ();
+        foreach (Wnck.Window window in windows) {
+            add_window (window);
+        }
+        return Source.REMOVE;
+    }
+
+    private void add_window (Wnck.Window window) {
+        ulong xid = window.get_xid ();
+        unowned string app_id = window.get_class_instance_name ();
+
+        if (app_id in ignore_apps) {
+            return;
+        }
+
+        if (!window_map.has_key (app_id)) {
+            append (app_id);
+        }
+        window_map[app_id].add_xid (xid);
     }
 
     private void show_welcome_dialog () {
