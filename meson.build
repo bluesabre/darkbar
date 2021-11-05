@@ -1,72 +1,47 @@
-# project name and programming language
-project('com.github.bluesabre.darkbar', 'vala', 'c')
-
-# Include the translations module
-i18n = import('i18n')
-
-# Set our translation domain
-add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), language:'c')
-
-add_project_arguments([
-		'-DWNCK_I_KNOW_THIS_IS_UNSTABLE',
-	],
-	language: 'c',
+# Project name, programming language and version
+project (
+    'com.github.bluesabre.darkbar',
+    'c', 'vala',
+    version: '0.1.2'
 )
 
-# Create a new executable, list the files we want to compile, list the dependencies we need, and install
+# GNOME module
+gnome = import ('gnome')
+
+# Translation module
+i18n = import ('i18n')
+
+# Project arguments
+add_project_arguments (
+    '-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name ()),
+    '-DHANDY_USE_UNSTABLE_API',
+    '-DWNCK_I_KNOW_THIS_IS_UNSTABLE',
+    language: 'c'
+)
+
+# Listing dependencies
+dependencies = [
+    dependency ('gtk+-3.0'),
+    dependency ('glib-2.0'),
+    dependency ('gio-unix-2.0'),
+    dependency ('gee-0.8'),
+    dependency ('libhandy-1'),
+    dependency ('granite', version: '>= 6.0.0'),
+    dependency ('libwnck-3.0'),
+    dependency ('x11'),
+]
+
+subdir ('src')
+
+# Define executable
 executable(
-    meson.project_name(),
-    'src' / 'Application.vala',
-    'src' / 'ForeignWindow.vala',
-    dependencies: [
-        dependency('gtk+-3.0'),
-        dependency('glib-2.0'),
-        dependency('gio-unix-2.0'),
-        dependency('gee-0.8'),
-        dependency('libhandy-1'),
-        dependency('granite', version: '>= 6.0.0'),
-        [dependency('libwnck-3.0'), dependency('x11')],
-    ],
+    meson.project_name (),
+    sources,
+    dependencies: dependencies,
     install: true
 )
 
-#Translate and install our .desktop file
-i18n.merge_file(
-    input: 'data' / 'com.github.bluesabre.darkbar.desktop.in',
-    output: meson.project_name() + '.desktop',
-    po_dir: meson.source_root() / 'po',
-    type: 'desktop',
-    install: true,
-    install_dir: get_option('datadir') / 'applications'
-)
+subdir ('data')
+subdir ('po')
 
-#Translate and install our .appdata file
-i18n.merge_file(
-    input: 'data' / 'com.github.bluesabre.darkbar.appdata.xml.in',
-    output: meson.project_name() + '.appdata.xml',
-    po_dir: meson.source_root() / 'po',
-    install: true,
-    install_dir: get_option('datadir') / 'metainfo'
-)
-
-subdir('po')
-
-meson.add_install_script('meson/post_install.py')
-
-subdir('data')
-
-# Install our icons in all the required sizes
-icon_sizes = ['16', '32', '48', '64', '128']
-
-foreach i : icon_sizes
-    install_data(
-        'data' / 'icons' / i + '.svg',
-        install_dir: get_option('datadir') / 'icons' / 'hicolor' / i + 'x' + i / 'apps',
-        rename: meson.project_name() + '.svg'
-    )
-    install_data(
-        'data' / 'icons' / i + '.svg',
-        install_dir: get_option('datadir') / 'icons' / 'hicolor' / i + 'x' + i + '@2' / 'apps',
-        rename: meson.project_name() + '.svg'
-    )
-endforeach
+meson.add_install_script ('meson/post_install.py')
