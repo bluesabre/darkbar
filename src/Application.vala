@@ -31,7 +31,7 @@ public class MyApp : Gtk.Application {
         main_window = new MainWindow (this) {
             default_height = 500,
             default_width = 400,
-            title = "Darkbar"
+            title = _("Darkbar")
         };
 
         if (!startup_mode) {
@@ -276,7 +276,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             "com.github.bluesabre.darkbar"
         );
 
-        var custom_widget = new Gtk.CheckButton.with_label ("Show this dialog next time.");
+        var custom_widget = new Gtk.CheckButton.with_label (_("Show this dialog next time."));
         custom_widget.show ();
 
         settings.bind ("show-welcome", custom_widget, "active", GLib.SettingsBindFlags.DEFAULT);
