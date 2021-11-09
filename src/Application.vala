@@ -366,12 +366,103 @@ public class MainWindow : Hdy.ApplicationWindow {
         dialog.show ();
     }
 
-    private string? find_app_info (string app_id) {
+    private Gee.HashMap<string, DesktopAppInfo> get_appinfos_by_path (string path) {
+        Gee.HashMap<string, DesktopAppInfo> appinfos = new Gee.HashMap<string, DesktopAppInfo> ();
+
+        try {
+            var directory = File.new_for_path (path);
+
+            var enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
+
+            FileInfo info;
+            while ((info = enumerator.next_file ()) != null) {
+                if (info.get_file_type () != FileType.DIRECTORY) {
+                    if (info.get_name ().has_suffix (".desktop")) {
+                        var filename = path + "/" + info.get_name ();
+                        var appinfo = new DesktopAppInfo.from_filename (filename);
+                        if (appinfo != null) {
+                            appinfos[appinfo.get_id ()] = appinfo;
+                        } else {
+                            var keyfile = new KeyFile ();
+                            try {
+                                keyfile.load_from_file (filename, KeyFileFlags.NONE);
+                                string? binary = null;
+                                if (keyfile.has_key ("Desktop Entry", "TryExec")) {
+                                    binary = keyfile.get_string ("Desktop Entry", "TryExec");
+                                }
+                                if (binary == null) {
+                                    binary = keyfile.get_string ("Desktop Entry", "Exec");
+                                }
+                                if (binary != null) {
+                                    if (binary.contains (" ")) {
+                                        binary = binary.split(" ", 2)[0];
+                                    }
+                                    if (binary.has_prefix ("/")) {
+                                        binary = "/run/host" + binary;
+                                        keyfile.set_string ("Desktop Entry", "Exec", binary);
+                                    } else {
+                                        // ./run/host/usr/bin/guake
+                                        // Standard path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+                                        string[] paths = {
+                                            "/usr/local/sbin",
+                                            "/usr/local/bin",
+                                            "/usr/sbin",
+                                            "/usr/bin",
+                                            "/sbin",
+                                            "/bin",
+                                            "/usr/games",
+                                            "/usr/local/games",
+                                            "/snap/bin"
+                                        };
+                                        foreach (string basedir in paths) {
+                                            var fullpath = "/run/host" + basedir + "/" + binary;
+                                            File file = File.new_for_path (fullpath);
+                                            if (file.query_exists (null)) {
+                                                binary = fullpath;
+                                                keyfile.set_string ("Desktop Entry", "Exec", binary);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    appinfo = new DesktopAppInfo.from_keyfile (keyfile);
+                                    if (appinfo != null) {
+                                        var app_id = Path.get_basename (filename);
+                                        appinfos[app_id] = appinfo;
+                                    }
+                                }
+                            } catch (Error e) {
+                                warning ("Keyfile Processing Error: " + e.message);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (Error e) {
+            stderr.printf ("Error: %s\n", e.message);
+        }
+
+        return appinfos;
+    }
+
+    private DesktopAppInfo? get_sandboxed_appinfo (string app_id) {
+        Gee.HashMap<string, DesktopAppInfo> app_infos = get_appinfos_by_path ("/run/host/usr/share/applications");
+
+        string? id = find_app_info_in_map (app_id, app_infos);
+
+        if (id != null) {
+            if (id in app_infos.keys) {
+                return app_infos[id];
+            }
+        }
+
+        return null;
+    }
+
+    private string? find_app_info_in_map (string app_id, Gee.HashMap<string, AppInfo> app_infos) {
         var apps = new Gee.HashMap<string, uint> ();
-        List<AppInfo> app_infos = AppInfo.get_all ();
-        foreach (AppInfo app_info in app_infos) {
+        foreach (string id in app_infos.keys) {
             var score = 0;
-            var id = app_info.get_id ();
             if (id.has_suffix (".desktop")) {
                 var desktop_id = id.dup ();
                 id = id.substring (0, id.length - 8);
@@ -414,9 +505,24 @@ public class MainWindow : Hdy.ApplicationWindow {
             string[] sublist = app_id.split ("-");
             sublist = sublist[0:sublist.length - 1];
             var sub_app_id = string.joinv ("-", sublist);
-            return find_app_info (sub_app_id);
+            return find_app_info_in_map (sub_app_id, app_infos);
         }
         return null;
+    }
+
+    private Gee.HashMap<string, AppInfo> get_all_appinfos () {
+        Gee.HashMap<string, AppInfo> appinfos = new Gee.HashMap<string, AppInfo> ();
+        List<AppInfo> app_infos = AppInfo.get_all ();
+
+        foreach (AppInfo app_info in app_infos) {
+            appinfos[app_info.get_id ()] = app_info;
+        }
+
+        return appinfos;
+    }
+
+    private string? find_app_info (string app_id) {
+        return find_app_info_in_map (app_id, get_all_appinfos ());
     }
 
     private DesktopAppInfo? get_app_info (string app_id) {
@@ -426,6 +532,9 @@ public class MainWindow : Hdy.ApplicationWindow {
             if (desktop_app_id != null) {
                 app_info = new DesktopAppInfo (desktop_app_id);
             }
+        }
+        if (app_info == null) {
+            app_info = get_sandboxed_appinfo (app_id);
         }
         return app_info;
     }
