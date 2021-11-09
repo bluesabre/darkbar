@@ -87,12 +87,18 @@ public class MainWindow : Hdy.ApplicationWindow {
             sandboxed = true;
         }
 
+        var gtk_settings = Gtk.Settings.get_default ();
+
         var headerbar = new Hdy.HeaderBar () {
-            decoration_layout = "close:",
+            decoration_layout = gtk_settings.gtk_decoration_layout,
             show_close_button = true,
             has_subtitle = false,
             title = _("Darkbar")
         };
+
+        gtk_settings.notify["gtk-decoration-layout"].connect (() => {
+            headerbar.decoration_layout = gtk_settings.gtk_decoration_layout;
+        });
 
         unowned Gtk.StyleContext headerbar_ctx = headerbar.get_style_context ();
         headerbar_ctx.add_class ("default-decoration");
@@ -215,7 +221,6 @@ public class MainWindow : Hdy.ApplicationWindow {
         listbox.show_all ();
 
         var granite_settings = Granite.Settings.get_default ();
-        var gtk_settings = Gtk.Settings.get_default ();
 
         prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
         gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
