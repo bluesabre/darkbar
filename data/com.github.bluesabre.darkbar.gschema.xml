@@ -11,5 +11,10 @@
       <summary>Show welcome dialog</summary>
       <description>Show the welcome dialog when Darkbar is first displayed</description>
     </key>
+    <key name="default-theme" type="u">
+      <default>0</default>
+      <summary>Default theme</summary>
+      <summary>Default theme to use for newly discovered windows</summary>
+    </key>
   </schema>
 </schemalist>

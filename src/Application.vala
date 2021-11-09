@@ -87,6 +87,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             sandboxed = true;
         }
 
+        settings = new GLib.Settings ("com.github.bluesabre.darkbar");
         var gtk_settings = Gtk.Settings.get_default ();
 
         var headerbar = new Hdy.HeaderBar () {
@@ -141,27 +142,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         ctx.add_class ("content");
         darkbar_prefs.add (listbox);
 
-        var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
-            margin = 6
-        };
+        var hbox = get_background_switcher ();
         listbox.insert (hbox, 0);
 
-        var glabel = new Gtk.Label (_("Run in the background")) {
-            hexpand = true,
-            halign = Gtk.Align.START
-        };
-        hbox.pack_start (glabel, true, true, 0);
-
-        var swidget = new Gtk.Switch () {
-            active = run_in_background
-        };
-        swidget.notify["active"].connect (() => {
-            if (!set_run_at_startup (swidget.active)) {
-                swidget.active = !swidget.active;
-            }
-            run_in_background = swidget.active;
-        });
-        hbox.pack_start (swidget, false, false, 0);
+        hbox = get_default_theme_switcher (get_default_mode_string ());
+        listbox.insert (hbox, 1);
 
         var app_prefs = new Hdy.PreferencesGroup () {
             title = _("Active Applications")
@@ -175,8 +160,6 @@ public class MainWindow : Hdy.ApplicationWindow {
         ctx.add_class ("content");
         app_prefs.add (listbox);
         set_sort_func (window_sort_function);
-
-        settings = new GLib.Settings ("com.github.bluesabre.darkbar");
 
         listbox.bind_model ((ListModel)list_store, (obj) => {
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
@@ -273,6 +256,71 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private ForeignWindow.DisplayMode get_default_mode () {
+        return (ForeignWindow.DisplayMode) settings.get_uint ("default-theme");
+    }
+
+    private string get_default_mode_string () {
+        return ForeignWindow.get_mode_string_for_mode (get_default_mode ());
+    }
+
+    private Gtk.Box get_background_switcher () {
+        var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 6
+        };
+
+        var label = new Gtk.Label (_("Run in the background")) {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        box.pack_start (label, true, true, 0);
+
+        var widget = new Gtk.Switch () {
+            active = run_in_background
+        };
+        widget.notify["active"].connect (() => {
+            if (!set_run_at_startup (widget.active)) {
+                widget.active = !widget.active;
+            }
+            run_in_background = widget.active;
+        });
+        box.pack_start (widget, false, false, 0);
+
+        box.show_all ();
+
+        return box;
+    }
+
+    private Gtk.Box get_default_theme_switcher (string? active_id) {
+        var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 6
+        };
+
+        var label = new Gtk.Label (_("Default style for new windows")) {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        box.pack_start (label, true, true, 0);
+
+        var combo = new Gtk.ComboBoxText ();
+        combo.append ("none", _("None"));
+        combo.append ("system", _("Follow System Theme"));
+        combo.append ("light", _("Light"));
+        combo.append ("dark", _("Dark"));
+        combo.active_id = active_id;
+        box.pack_start (combo, false, false, 0);
+
+        combo.changed.connect (() => {
+            var mode = ForeignWindow.get_mode_from_string (combo.active_id);
+            settings.set_uint("default-theme", mode);
+            return;
+        });
+
+        box.show_all ();
+
+        return box;
     }
 
     private bool add_all_windows () {
@@ -385,6 +433,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     public void append (string app_id) {
         var app_info = get_app_info (app_id);
         string? icon_name = null;
+        var defaulted = false;
         var app_name = app_id;
         if (app_info != null) {
             icon_name = app_info.get_string ("Icon");
@@ -394,10 +443,17 @@ public class MainWindow : Hdy.ApplicationWindow {
             icon_name = "application-default-icon";
         }
         ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
+        if (window_mode == ForeignWindow.DisplayMode.NONE) {
+            window_mode = get_default_mode ();
+            defaulted = true;
+        }
         var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark, sandboxed);
         window.recompute_mode ();
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);
+        if (defaulted && window_mode != ForeignWindow.DisplayMode.NONE) {
+            store_window (window);
+        }
     }
 
     public void update_windows () {

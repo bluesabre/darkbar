@@ -57,7 +57,7 @@ public class ForeignWindow : GLib.Object {
         return list.size == 0;
     }
 
-    public DisplayMode get_mode_from_string (string modestr) {
+    public static DisplayMode get_mode_from_string (string modestr) {
         switch (modestr) {
             case "none":
                 return DisplayMode.NONE;
@@ -72,8 +72,8 @@ public class ForeignWindow : GLib.Object {
         }
     }
 
-    public string get_mode_string () {
-        switch (mode) {
+    public static string get_mode_string_for_mode (uint display_mode) {
+        switch (display_mode) {
             case DisplayMode.NONE:
                 return "none";
             case DisplayMode.SYSTEM:
@@ -85,6 +85,10 @@ public class ForeignWindow : GLib.Object {
             default:
                 return "none";
         }
+    }
+
+    public string get_mode_string () {
+        return get_mode_string_for_mode (mode);
     }
 
     public void recompute_mode () {
