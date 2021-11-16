@@ -26,6 +26,7 @@
   <url type="homepage">https://github.com/bluesabre/darkbar</url>
   <url type="bugtracker">https://github.com/bluesabre/darkbar/issues</url>
   <url type="donation">https://github.com/sponsors/bluesabre</url>
+  <url type="translate">https://www.transifex.com/bluesabreorg/darkbar</url>
 
   <provides>
     <binary>com.github.bluesabre.darkbar</binary>

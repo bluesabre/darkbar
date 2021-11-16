@@ -33,3 +33,7 @@ To install, use `ninja install`, then execute with `com.github.bluesabre.darkbar
 
     sudo ninja install
     com.github.bluesabre.darkbar
+
+## Translations
+
+To contribute translations, please visit [Transifex](https://www.transifex.com/bluesabreorg/darkbar) or submit a pull request.
