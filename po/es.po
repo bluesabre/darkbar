@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.bluesabre.darkbar package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Toni Estévez <toni.estevez@gmail.com>, 2021
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: com.github.bluesabre.darkbar\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-10 11:00+0100\n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: Toni Estévez <toni.estevez@gmail.com>, 2021\n"
+"Language-Team: Spanish (https://www.transifex.com/bluesabreorg/teams/99550/es/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:97
+msgid "Darkbar"
+msgstr "Darkbar"
+
+#: src/Application.vala:134
+msgid "Darkbar Preferences"
+msgstr "Preferencias de Darkbar"
+
+#: src/Application.vala:152
+msgid "Active Applications"
+msgstr "Aplicaciones activas"
+
+#: src/Application.vala:180 src/Application.vala:308
+msgid "None"
+msgstr "Desactivar"
+
+#: src/Application.vala:181 src/Application.vala:309
+msgid "Follow System Theme"
+msgstr "Seguir el tema del sistema"
+
+#: src/Application.vala:182 src/Application.vala:310
+msgid "Light"
+msgstr "Claro"
+
+#: src/Application.vala:183 src/Application.vala:311
+msgid "Dark"
+msgstr "Oscuro"
+
+#: src/Application.vala:274
+msgid "Run in the background"
+msgstr "Ejecutar en segundo plano"
+
+#: src/Application.vala:301
+msgid "Default style for new windows"
+msgstr "Estilo predeterminado para las nuevas ventanas"
+
+#: src/Application.vala:351
+msgid "Thank you for using Darkbar!"
+msgstr "¡Gracias por usar Darkbar!"
+
+#: src/Application.vala:352
+msgid ""
+"Darkbar replaces window decorations with your preference of a dark or light "
+"theme variant. Only applications using a standard titlebar layout are "
+"supported."
+msgstr ""
+"Darkbar reemplaza las decoraciones de las ventanas por la variante oscura o "
+"clara del tema que prefiera. Solo se admiten las aplicaciones que usan una "
+"distribución estándar de la barra de título."
+
+#: src/Application.vala:356
+msgid "Show this dialog next time."
+msgstr "Mostrar este diálogo la próxima vez."
