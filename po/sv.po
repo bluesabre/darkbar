@@ -31,7 +31,7 @@ msgstr "Darkbar Inställningar"
 
 #: src/Application.vala:152
 msgid "Active Applications"
-msgstr "Aktiva Applikationer"
+msgstr "Aktiva Program"
 
 #: src/Application.vala:180 src/Application.vala:308
 msgid "None"
@@ -43,11 +43,11 @@ msgstr "Följ Systemtema"
 
 #: src/Application.vala:182 src/Application.vala:310
 msgid "Light"
-msgstr "Ljus"
+msgstr "Ljust"
 
 #: src/Application.vala:183 src/Application.vala:311
 msgid "Dark"
-msgstr "Mörk"
+msgstr "Mörkt"
 
 #: src/Application.vala:274
 msgid "Run in the background"
@@ -68,7 +68,7 @@ msgid ""
 "supported."
 msgstr ""
 "Darkbar ersätter fönsterdekorationer med en variant av mörkt eller ljust "
-"tema. Endast applikationer som använder en vanlig titelradslayout stöds."
+"tema. Endast program som använder en vanlig titelradslayout stöds."
 
 #: src/Application.vala:356
 msgid "Show this dialog next time."
