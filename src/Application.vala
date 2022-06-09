@@ -40,6 +40,10 @@ public class MyApp : Gtk.Application {
     }
 
     public static int main (string[] args) {
+        if (!Thread.supported()) {
+            stderr.printf("Cannot run without threads.\n");
+            return 1;
+        }
         return new MyApp ().run (args);
     }
 }
@@ -240,6 +244,8 @@ public class MainWindow : Hdy.ApplicationWindow {
                 }
             }
         });
+
+        var wayland_listener = new WaylandWindowListener(2000000);
 
         show.connect (() => {
             if (settings.get_boolean ("show-welcome")) {
