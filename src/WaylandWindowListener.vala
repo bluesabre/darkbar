@@ -24,10 +24,11 @@ https://valadoc.org/glib-2.0/GLib.Process.spawn_async_with_pipes.html
 
 public class WaylandWindowListener : GLib.Object {
 
-    public signal void window_opened ();
-    public signal void window_closed ();
+    public signal void window_opened (WaylandWindow window);
+    public signal void window_closed (WaylandWindow window);
 
     public Gee.HashSet<ulong> list { get; set; }
+    public Gee.HashMap<ulong, WaylandWindow> windows { get; set; }
     public ulong timer { get; set; }
     public Thread thread { get; set; }
 
@@ -37,20 +38,45 @@ public class WaylandWindowListener : GLib.Object {
 
     construct {
         list = new Gee.HashSet<ulong> ();
+        windows = new Gee.HashMap<ulong, WaylandWindow> ();
         try {
             thread = new Thread<int> ("thread_func", thread_func);
         } catch (ThreadError e) {
-            stdout.printf("Thread failed.\n");
+            critical("Thread failed.");
         }
     }
 
     int thread_func() {
+        debug("Thread running...");
         while (true) {
-            stdout.printf("Thread running.\n");
             Thread.usleep(timer);
             List<ulong> xids = get_xid_list();
             xids.foreach((xid) => {
-                print("Found window: %s\n", get_class_instance_name (xid));
+                if (!has_xid (xid)) {
+                    add_xid (xid);
+                    string class_instance_name;
+                    if (get_class_instance_name (xid, out class_instance_name)) {
+                        debug("Found window[%s]: %s", xid.to_string(), class_instance_name);
+                        WaylandWindow window = new WaylandWindow(xid,
+                            class_instance_name);
+                        windows.set (xid, window);
+                        window_opened (window);
+                    }
+                }
+                //Thread.yield ();
+            });
+            list.foreach((xid) => {
+                if (xids.index (xid) == -1) {
+                    debug("Lost window[%s]", xid.to_string());
+                    if (windows.has_key (xid)) {
+                        WaylandWindow window;
+                        windows.unset (xid, out window);
+                        debug("Lost window[%s]: %s", xid.to_string(), window.get_class_instance_name ());
+                        window_closed (window);
+                    }
+                    remove_xid (xid);
+                }
+                return true;
             });
         }
         return 0;
@@ -95,13 +121,13 @@ public class WaylandWindowListener : GLib.Object {
             }
 
         } catch (SpawnError e) {
-            print ("Error: %s\n", e.message);
+            critical ("Error: %s", e.message);
         }
 
         return ids;
     }
 
-    public string get_class_instance_name(ulong xid) {
+    public bool get_class_instance_name(ulong xid, out string class_instance_name) {
         try {
             string[] spawn_args = {"xprop", "-id", xid.to_string(),  "WM_CLASS"};
             string[] spawn_env = Environ.get ();
@@ -120,17 +146,17 @@ public class WaylandWindowListener : GLib.Object {
             if ("WM_CLASS(STRING)" in ls_stdout) {
                 Regex r = /^.* = \"(?P<wmclass>.*)\",.*$/;
                 MatchInfo info;
-                if(r.match(ls_stdout, 0, out info)) {
-                    var wmclass = info.fetch_named("wmclass");
-                    return wmclass;
+                if (r.match(ls_stdout, 0, out info)) {
+                    class_instance_name = info.fetch_named("wmclass");
+                    return true;
                 }
             }
 
         } catch (SpawnError e) {
-            print ("Error: %s\n", e.message);
+            critical ("Error: %s", e.message);
         }
 
-        return "";
+        return false;
     }
 
 }

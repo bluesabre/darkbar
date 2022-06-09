@@ -216,36 +216,71 @@ public class MainWindow : Hdy.ApplicationWindow {
             update_windows ();
         });
 
-        var screen = Wnck.Screen.get_default ();
-        screen.window_opened.connect ((window) => {
-            unowned string app_id = window.get_class_instance_name ();
-            if (app_id == null) {
-                if(timeout_id > 0) {
-                    Source.remove(timeout_id);
-                }
-                timeout_id = Timeout.add(delay, add_all_windows);
-            } else {
-                add_window (window);
-            }
-        });
-
-        screen.window_closed.connect ((window) => {
-            ulong xid = window.get_xid ();
-            unowned string app_id = window.get_class_instance_name ();
-
-            if (window_map.has_key (app_id)) {
-                window_map[app_id].remove_xid (xid);
-                if (window_map[app_id].empty ()) {
-                    uint pos = 0;
-                    if (list_store.find (window_map[app_id], out pos)) {
-                        list_store.remove (pos);
+        if (is_wayland ()) {
+            debug("Initializaing Wayland Window Listener...");
+            var wayland_listener = new WaylandWindowListener(5 * 1000000);
+            wayland_listener.window_opened.connect ((window) => {
+                debug("Wayland window opened");
+                unowned string app_id = window.get_class_instance_name ();
+                debug("App ID: %s", app_id);
+                if (app_id == null) {
+                    if(timeout_id > 0) {
+                        Source.remove(timeout_id);
                     }
-                    window_map.unset (app_id);
+                    timeout_id = Timeout.add(delay, add_all_windows);
+                } else {
+                    add_wayland_window (window);
                 }
-            }
-        });
+            });
 
-        var wayland_listener = new WaylandWindowListener(2000000);
+            wayland_listener.window_closed.connect ((window) => {
+                debug("Wayland window closed");
+                ulong xid = window.get_xid ();
+                debug("XID: %s", xid.to_string ());
+                unowned string app_id = window.get_class_instance_name ();
+                debug("App ID: %s", app_id);
+
+                if (window_map.has_key (app_id)) {
+                    window_map[app_id].remove_xid (xid);
+                    if (window_map[app_id].empty ()) {
+                        uint pos = 0;
+                        if (list_store.find (window_map[app_id], out pos)) {
+                            list_store.remove (pos);
+                        }
+                        window_map.unset (app_id);
+                    }
+                }
+            });
+        } else {
+            var screen = Wnck.Screen.get_default ();
+            screen.window_opened.connect ((window) => {
+                unowned string app_id = window.get_class_instance_name ();
+                if (app_id == null) {
+                    if(timeout_id > 0) {
+                        Source.remove(timeout_id);
+                    }
+                    timeout_id = Timeout.add(delay, add_all_windows);
+                } else {
+                    add_window (window);
+                }
+            });
+    
+            screen.window_closed.connect ((window) => {
+                ulong xid = window.get_xid ();
+                unowned string app_id = window.get_class_instance_name ();
+    
+                if (window_map.has_key (app_id)) {
+                    window_map[app_id].remove_xid (xid);
+                    if (window_map[app_id].empty ()) {
+                        uint pos = 0;
+                        if (list_store.find (window_map[app_id], out pos)) {
+                            list_store.remove (pos);
+                        }
+                        window_map.unset (app_id);
+                    }
+                }
+            });
+        }
 
         show.connect (() => {
             if (settings.get_boolean ("show-welcome")) {
@@ -261,6 +296,12 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private bool is_wayland () {
+        string[] spawn_env = Environ.get ();
+        unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
+        return wayland_display != null;
     }
 
     private ForeignWindow.DisplayMode get_default_mode () {
@@ -340,6 +381,23 @@ public class MainWindow : Hdy.ApplicationWindow {
     private void add_window (Wnck.Window window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
+
+        if (app_id in ignore_apps) {
+            return;
+        }
+
+        if (!window_map.has_key (app_id)) {
+            append (app_id);
+        }
+        window_map[app_id].add_xid (xid);
+    }
+
+    private void add_wayland_window (WaylandWindow window) {
+        debug("Adding Wayland window...");
+        ulong xid = window.get_xid ();
+        debug("XID: %s", xid.to_string());
+        unowned string app_id = window.get_class_instance_name ();
+        debug("App ID: %s", app_id);
 
         if (app_id in ignore_apps) {
             return;
