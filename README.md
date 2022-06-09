@@ -17,11 +17,11 @@ Only applications using traditional decorations are supported. If your app is un
 
 You'll need the following dependencies:
 
-* granite >= 6.0.0
-* libhandy >= 1.2.0
+* libhandy >= 1.5.0
 * libwnck >= 3.36.0
 * meson >= 0.43.0
 * valac
+* xprop
 
 Run `meson build` to configure the build environment. Change to the build directory and run `ninja` to build
 

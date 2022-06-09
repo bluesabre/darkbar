@@ -203,13 +203,12 @@ public class MainWindow : Hdy.ApplicationWindow {
 
         listbox.show_all ();
 
-        var granite_settings = Granite.Settings.get_default ();
+        var style_manager = Hdy.StyleManager.get_default();
+        style_manager.color_scheme = Hdy.ColorScheme.PREFER_LIGHT;
 
-        prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
-        gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
-        granite_settings.notify["prefers-color-scheme"].connect (() => {
-            prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
-            gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
+        prefers_dark = style_manager.dark;
+        style_manager.notify["dark"].connect (() => {
+            prefers_dark = style_manager.dark;
             update_windows ();
         });
 
@@ -347,11 +346,14 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     private void show_welcome_dialog () {
-        var dialog = new Granite.MessageDialog.with_image_from_icon_name (
-            _("Thank you for using Darkbar!"),
-            _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported."),
-            "com.github.bluesabre.darkbar"
+        var dialog = new Gtk.MessageDialog (
+            this,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            Gtk.MessageType.INFO,
+            Gtk.ButtonsType.CLOSE,
+            _("Thank you for using Darkbar!")
         );
+        dialog.secondary_text = _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.");
 
         var custom_widget = new Gtk.CheckButton.with_label (_("Show this dialog next time."));
         custom_widget.show ();
@@ -362,7 +364,9 @@ public class MainWindow : Hdy.ApplicationWindow {
             dialog.destroy ();
         });
 
-        dialog.custom_bin.add (custom_widget);
+        var message_area = (Gtk.Box)dialog.message_area;
+
+        message_area.add (custom_widget);
         dialog.show ();
     }
 
