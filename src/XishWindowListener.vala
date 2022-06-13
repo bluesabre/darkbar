@@ -3,25 +3,6 @@
  * SPDX-FileCopyrightText: 2022 Sean Davis <sean@bluesabre.org>
  */
 
-/*
-[bluesabre@fedora ~]$ xdotool search --onlyvisible --sync ".+"
-Defaulting to search window name, class, and classname
-6291477
-6291466
-27262979
-41943461
-10485763
-
-xdotool getwindowname 41943461
-GNU Image Manipulation Program
-
-window_opened
-window_closed
-
-https://valadoc.org/glib-2.0/GLib.Process.spawn_async_with_pipes.html
-
-*/
-
 public class XishWindowListener : GLib.Object {
 
     public signal void window_opened (XishWindow window);
@@ -31,9 +12,6 @@ public class XishWindowListener : GLib.Object {
     public Gee.HashMap<ulong, XishWindow> windows { get; set; }
     public uint interval { get; set; }
 
-    private uint timeout_id;
-    private int delay = 100;
-
     public XishWindowListener (uint interval) {
         Object (interval: interval);
     }
@@ -41,44 +19,7 @@ public class XishWindowListener : GLib.Object {
     construct {
         list = new Gee.HashSet<ulong> ();
         windows = new Gee.HashMap<ulong, XishWindow> ();
-        if (is_wayland ()) {
-            Timeout.add_seconds(interval, refresh_wayland_windows);
-        } else {
-            var screen = Wnck.Screen.get_default ();
-            screen.window_opened.connect ((wnck_window) => {
-                add_wnck_window (wnck_window, true);
-            });
-
-            screen.window_closed.connect ((wnck_window) => {
-                ulong xid = wnck_window.get_xid ();
-                lost_window (xid);
-                remove_xid (xid);
-            });
-        }
-    }
-
-    private bool add_all_wnck_windows () {
-        var screen = Wnck.Screen.get_default ();
-        unowned List<Wnck.Window> windows = screen.get_windows ();
-        foreach (Wnck.Window window in windows) {
-            add_wnck_window (window, false);
-        }
-        return Source.REMOVE;
-    }
-
-    private void add_wnck_window (Wnck.Window window, bool rebuild) {
-        ulong xid = window.get_xid ();
-        if (!has_xid (xid)) {
-            unowned string class_instance_name = window.get_class_instance_name ();
-            if (class_instance_name != null) {
-                found_window (xid, class_instance_name);
-            } else if (rebuild) {
-                if (timeout_id > 0) {
-                    Source.remove(timeout_id);
-                }
-                timeout_id = Timeout.add(delay, add_all_wnck_windows);
-            }
-        }
+        Timeout.add_seconds(interval, refresh_windows);
     }
 
     private void found_window (ulong xid, string class_instance_name) {
@@ -98,13 +39,7 @@ public class XishWindowListener : GLib.Object {
         }
     }
 
-    private bool is_wayland () {
-        string[] spawn_env = Environ.get ();
-        unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
-        return wayland_display != null;
-    }
-
-    bool refresh_wayland_windows () {
+    bool refresh_windows () {
         List<ulong> xids = get_xid_list();
         xids.foreach((xid) => {
             if (!has_xid (xid)) {

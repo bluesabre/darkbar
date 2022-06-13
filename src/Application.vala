@@ -40,10 +40,6 @@ public class MyApp : Gtk.Application {
     }
 
     public static int main (string[] args) {
-        if (!Thread.supported()) {
-            stderr.printf("Cannot run without threads.\n");
-            return 1;
-        }
         return new MyApp ().run (args);
     }
 }
@@ -66,10 +62,14 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
 
+    private int delay = 100;
+    private uint timeout_id;
+
     public string[] ignore_apps = {
         "io.elementary.wingpanel",
         "com.github.bluesabre.darkbar",
-        "plank"
+        "plank",
+        "gnome-shell"
     };
 
     static construct {
@@ -170,13 +170,11 @@ public class MainWindow : Hdy.ApplicationWindow {
             var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
                 pixel_size = 24
             };
-
             box.pack_start (image, false, false, 0);
 
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
                 halign = Gtk.Align.START
             };
-
             box.pack_start (label, true, true, 0);
 
             var combo = new Gtk.ComboBoxText ();
@@ -184,9 +182,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             combo.append ("system", _("Follow System Theme"));
             combo.append ("light", _("Light"));
             combo.append ("dark", _("Dark"));
-
             combo.active_id = ((ForeignWindow)obj).get_mode_string ();
-
             box.pack_start (combo, false, false, 0);
 
             combo.changed.connect (() => {
@@ -217,33 +213,64 @@ public class MainWindow : Hdy.ApplicationWindow {
             update_windows ();
         });
 
-        var window_listener = new XishWindowListener(1);
-        window_listener.window_opened.connect ((window) => {
-            unowned string app_id = window.get_class_instance_name ();
-            if (app_id != null) {
-                ulong xid = window.get_xid ();
-                debug ("Window [%s] opened: %s", xid.to_string(), app_id);
-                add_window (window);
-            }
-        });
-
-        window_listener.window_closed.connect ((window) => {
-            ulong xid = window.get_xid ();
-            unowned string app_id = window.get_class_instance_name ();
-
-            debug ("Window [%s] closed: %s", xid.to_string(), app_id);
-
-            if (window_map.has_key (app_id)) {
-                window_map[app_id].remove_xid (xid);
-                if (window_map[app_id].empty ()) {
-                    uint pos = 0;
-                    if (list_store.find (window_map[app_id], out pos)) {
-                        list_store.remove (pos);
-                    }
-                    window_map.unset (app_id);
+        if (is_wayland()) {
+            var window_listener = new XishWindowListener(1);
+            window_listener.window_opened.connect ((window) => {
+                unowned string app_id = window.get_class_instance_name ();
+                if (app_id != null) {
+                    ulong xid = window.get_xid ();
+                    debug ("Window [%s] opened: %s", xid.to_string(), app_id);
+                    add_xish_window (window);
                 }
-            }
-        });
+            });
+    
+            window_listener.window_closed.connect ((window) => {
+                ulong xid = window.get_xid ();
+                unowned string app_id = window.get_class_instance_name ();
+    
+                debug ("Window [%s] closed: %s", xid.to_string(), app_id);
+    
+                if (window_map.has_key (app_id)) {
+                    window_map[app_id].remove_xid (xid);
+                    if (window_map[app_id].empty ()) {
+                        uint pos = 0;
+                        if (list_store.find (window_map[app_id], out pos)) {
+                            list_store.remove (pos);
+                        }
+                        window_map.unset (app_id);
+                    }
+                }
+            });
+        } else {
+            var screen = Wnck.Screen.get_default ();
+            screen.window_opened.connect ((window) => {
+                unowned string app_id = window.get_class_instance_name ();
+                if (app_id == null) {
+                    if (timeout_id > 0) {
+                        Source.remove(timeout_id);
+                    }
+                    timeout_id = Timeout.add(delay, add_all_wnck_windows);
+                } else {
+                    add_wnck_window (window);
+                }
+            });
+
+            screen.window_closed.connect ((window) => {
+                ulong xid = window.get_xid ();
+                unowned string app_id = window.get_class_instance_name ();
+
+                if (window_map.has_key (app_id)) {
+                    window_map[app_id].remove_xid (xid);
+                    if (window_map[app_id].empty ()) {
+                        uint pos = 0;
+                        if (list_store.find (window_map[app_id], out pos)) {
+                            list_store.remove (pos);
+                        }
+                        window_map.unset (app_id);
+                    }
+                }
+            });
+        }
 
         show.connect (() => {
             if (settings.get_boolean ("show-welcome")) {
@@ -259,6 +286,12 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private bool is_wayland () {
+        string[] spawn_env = Environ.get ();
+        unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
+        return wayland_display != null;
     }
 
     private ForeignWindow.DisplayMode get_default_mode () {
@@ -326,7 +359,29 @@ public class MainWindow : Hdy.ApplicationWindow {
         return box;
     }
 
-    private void add_window (XishWindow window) {
+    private bool add_all_wnck_windows () {
+        var screen = Wnck.Screen.get_default ();
+        unowned List<Wnck.Window> windows = screen.get_windows ();
+        foreach (Wnck.Window window in windows) {
+            add_wnck_window (window);
+        }
+        return Source.REMOVE;
+    }
+
+    private void add_wnck_window (Wnck.Window window) {
+        ulong xid = window.get_xid ();
+        unowned string app_id = window.get_class_instance_name ();
+
+        if (app_id in ignore_apps) {
+            return;
+        }
+        if (!window_map.has_key (app_id)) {
+            append (app_id);
+        }
+        window_map[app_id].add_xid (xid);
+    }
+
+    private void add_xish_window (XishWindow window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
 
