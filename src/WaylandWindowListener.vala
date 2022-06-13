@@ -29,67 +29,56 @@ public class WaylandWindowListener : GLib.Object {
 
     public Gee.HashSet<ulong> list { get; set; }
     public Gee.HashMap<ulong, WaylandWindow> windows { get; set; }
-    public ulong timer { get; set; }
-    public Thread thread { get; set; }
+    public uint interval { get; set; }
 
-    public WaylandWindowListener (ulong timer) {
-        Object (timer: timer);
+    public WaylandWindowListener (uint interval) {
+        Object (interval: interval);
     }
 
     construct {
         list = new Gee.HashSet<ulong> ();
         windows = new Gee.HashMap<ulong, WaylandWindow> ();
-        try {
-            thread = new Thread<int> ("thread_func", thread_func);
-        } catch (ThreadError e) {
-            critical("Thread failed.");
-        }
+        Timeout.add_seconds(interval, thread_func);
     }
 
-    int thread_func() {
-        debug("Thread running...");
-        while (true) {
-            debug("Thread loop");
-            Thread.usleep(timer);
-            debug("get_xid_list");
-            List<ulong> xids = get_xid_list();
-            debug("Got xid list");
-            xids.foreach((xid) => {
-                debug ("Looping xid: %s", xid.to_string());
-                if (!has_xid (xid)) {
-                    add_xid (xid);
-                    string class_instance_name = null;
-                    if (get_class_instance_name (xid, out class_instance_name)) {
-                        debug("Found window[%s]: %s", xid.to_string(), class_instance_name);
-                        WaylandWindow window = new WaylandWindow(xid,
-                            class_instance_name);
-                        windows.set (xid, window);
-                        window_opened (window);
-                    }
-                    Thread.yield ();
-                }
-                //Thread.yield ();
-            });
-            debug("Checking lost windows");
-            List<ulong> removals = new List<ulong> ();
-            foreach (ulong xid in list) {
-                if (xids.index (xid) == -1) {
-                    debug("Lost window[%s]", xid.to_string());
-                    if (windows.has_key (xid)) {
-                        WaylandWindow window;
-                        windows.unset (xid, out window);
-                        debug("Lost window[%s]: %s", xid.to_string(), window.get_class_instance_name ());
-                        window_closed (window);
-                        Thread.yield ();
-                    }
-                    //remove_xid (xid);
-                    removals.append (xid);
+    bool thread_func() {
+        debug("Thread loop");
+        debug("get_xid_list");
+        List<ulong> xids = get_xid_list();
+        debug("Got xid list");
+        xids.foreach((xid) => {
+            debug ("Looping xid: %s", xid.to_string());
+            if (!has_xid (xid)) {
+                add_xid (xid);
+                string class_instance_name = null;
+                if (get_class_instance_name (xid, out class_instance_name)) {
+                    debug("Found window[%s]: %s", xid.to_string(), class_instance_name);
+                    WaylandWindow window = new WaylandWindow(xid,
+                        class_instance_name);
+                    windows.set (xid, window);
+                    window_opened (window);
                 }
             }
-            foreach (ulong xid in removals) {
-                remove_xid (xid);
+        });
+        debug("Checking lost windows");
+        List<ulong> removals = new List<ulong> ();
+        foreach (ulong xid in list) {
+            if (xids.index (xid) == -1) {
+                debug("Lost window[%s]", xid.to_string());
+                if (windows.has_key (xid)) {
+                    WaylandWindow window;
+                    windows.unset (xid, out window);
+                    debug("Lost window[%s]: %s", xid.to_string(), window.get_class_instance_name ());
+                    window_closed (window);
+                }
+                //remove_xid (xid);
+                removals.append (xid);
             }
         }
+        foreach (ulong xid in removals) {
+            remove_xid (xid);
+        }
+        return true;
     }
 
     public void add_xid (ulong xid) {

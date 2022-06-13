@@ -239,7 +239,7 @@ public class MainWindow : Hdy.ApplicationWindow {
 
         if (is_wayland ()) {
             debug("Initializaing Wayland Window Listener...");
-            var wayland_listener = new WaylandWindowListener(1 * 1000000);
+            var wayland_listener = new WaylandWindowListener(1);
             wayland_listener.window_opened.connect ((window) => {
                 debug("Wayland window opened");
                 unowned string app_id = window.get_class_instance_name ();
