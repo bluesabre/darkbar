@@ -227,19 +227,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             window_listener.window_closed.connect ((window) => {
                 ulong xid = window.get_xid ();
                 unowned string app_id = window.get_class_instance_name ();
-    
-                debug ("Window [%s] closed: %s", xid.to_string(), app_id);
-    
-                if (window_map.has_key (app_id)) {
-                    window_map[app_id].remove_xid (xid);
-                    if (window_map[app_id].empty ()) {
-                        uint pos = 0;
-                        if (list_store.find (window_map[app_id], out pos)) {
-                            list_store.remove (pos);
-                        }
-                        window_map.unset (app_id);
-                    }
-                }
+                window_closed (xid, app_id);
             });
         } else {
             var screen = Wnck.Screen.get_default ();
@@ -251,6 +239,7 @@ public class MainWindow : Hdy.ApplicationWindow {
                     }
                     timeout_id = Timeout.add(delay, add_all_wnck_windows);
                 } else {
+                    debug ("Window [%s] opened: %s", xid.to_string(), app_id);
                     add_wnck_window (window);
                 }
             });
@@ -258,17 +247,7 @@ public class MainWindow : Hdy.ApplicationWindow {
             screen.window_closed.connect ((window) => {
                 ulong xid = window.get_xid ();
                 unowned string app_id = window.get_class_instance_name ();
-
-                if (window_map.has_key (app_id)) {
-                    window_map[app_id].remove_xid (xid);
-                    if (window_map[app_id].empty ()) {
-                        uint pos = 0;
-                        if (list_store.find (window_map[app_id], out pos)) {
-                            list_store.remove (pos);
-                        }
-                        window_map.unset (app_id);
-                    }
-                }
+                window_closed (xid, app_id);
             });
         }
 
@@ -286,6 +265,20 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private void window_closed (ulong xid, string app_id) {
+        debug ("Window [%s] closed: %s", xid.to_string(), app_id);
+        if (window_map.has_key (app_id)) {
+            window_map[app_id].remove_xid (xid);
+            if (window_map[app_id].empty ()) {
+                uint pos = 0;
+                if (list_store.find (window_map[app_id], out pos)) {
+                    list_store.remove (pos);
+                }
+                window_map.unset (app_id);
+            }
+        }
     }
 
     private bool is_wayland () {
@@ -371,24 +364,19 @@ public class MainWindow : Hdy.ApplicationWindow {
     private void add_wnck_window (Wnck.Window window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
-
-        if (app_id in ignore_apps) {
-            return;
-        }
-        if (!window_map.has_key (app_id)) {
-            append (app_id);
-        }
-        window_map[app_id].add_xid (xid);
+        add_window (xid, app_id);
     }
 
     private void add_xish_window (XishWindow window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
+        add_window (xid, app_id);
+    }
 
+    private void add_window (ulong xid, string app_id) {
         if (app_id in ignore_apps) {
             return;
         }
-
         if (!window_map.has_key (app_id)) {
             append (app_id);
         }
