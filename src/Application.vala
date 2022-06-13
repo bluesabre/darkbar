@@ -166,42 +166,63 @@ public class MainWindow : Hdy.ApplicationWindow {
         set_sort_func (window_sort_function);
 
         listbox.bind_model ((ListModel)list_store, (obj) => {
+            debug ("Make box");
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
                 margin = 6
             };
 
+            debug ("Make image: %s", ((ForeignWindow)obj).icon_name);
             var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
                 pixel_size = 24
             };
+
+            debug ("Pack image");
             box.pack_start (image, false, false, 0);
 
+            debug ("Make label: %s", ((ForeignWindow)obj).app_name);
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
                 halign = Gtk.Align.START
             };
+
+            debug ("Pack label");
             box.pack_start (label, true, true, 0);
 
+            debug ("Make combo");
             var combo = new Gtk.ComboBoxText ();
+
+            debug ("Populate combo");
             combo.append ("none", _("None"));
             combo.append ("system", _("Follow System Theme"));
             combo.append ("light", _("Light"));
             combo.append ("dark", _("Dark"));
+
+            debug ("Get mode string: %s", ((ForeignWindow)obj).get_mode_string ());
             combo.active_id = ((ForeignWindow)obj).get_mode_string ();
+
+            debug ("Pack combo");
             box.pack_start (combo, false, false, 0);
 
             combo.changed.connect (() => {
+                debug ("Combo changed");
                 ((ForeignWindow)obj).set_mode_from_string (combo.active_id);
 
+                debug ("Check display mode");
                 if (((ForeignWindow)obj).mode == ForeignWindow.DisplayMode.NONE) {
+                    debug ("Forget window");
                     forget_window ((ForeignWindow)obj);
                 } else {
+                    debug ("Store window");
                     store_window ((ForeignWindow)obj);
                 }
 
+                debug ("All done");
                 return;
             });
 
+            debug ("Show all");
             box.show_all ();
 
+            debug ("And return the box");
             return box;
         });
 
@@ -218,7 +239,7 @@ public class MainWindow : Hdy.ApplicationWindow {
 
         if (is_wayland ()) {
             debug("Initializaing Wayland Window Listener...");
-            var wayland_listener = new WaylandWindowListener(5 * 1000000);
+            var wayland_listener = new WaylandWindowListener(1 * 1000000);
             wayland_listener.window_opened.connect ((window) => {
                 debug("Wayland window opened");
                 unowned string app_id = window.get_class_instance_name ();

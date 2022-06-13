@@ -49,12 +49,16 @@ public class WaylandWindowListener : GLib.Object {
     int thread_func() {
         debug("Thread running...");
         while (true) {
+            debug("Thread loop");
             Thread.usleep(timer);
+            debug("get_xid_list");
             List<ulong> xids = get_xid_list();
+            debug("Got xid list");
             xids.foreach((xid) => {
+                debug ("Looping xid: %s", xid.to_string());
                 if (!has_xid (xid)) {
                     add_xid (xid);
-                    string class_instance_name;
+                    string class_instance_name = null;
                     if (get_class_instance_name (xid, out class_instance_name)) {
                         debug("Found window[%s]: %s", xid.to_string(), class_instance_name);
                         WaylandWindow window = new WaylandWindow(xid,
@@ -62,10 +66,13 @@ public class WaylandWindowListener : GLib.Object {
                         windows.set (xid, window);
                         window_opened (window);
                     }
+                    Thread.yield ();
                 }
                 //Thread.yield ();
             });
-            list.foreach((xid) => {
+            debug("Checking lost windows");
+            List<ulong> removals = new List<ulong> ();
+            foreach (ulong xid in list) {
                 if (xids.index (xid) == -1) {
                     debug("Lost window[%s]", xid.to_string());
                     if (windows.has_key (xid)) {
@@ -73,13 +80,16 @@ public class WaylandWindowListener : GLib.Object {
                         windows.unset (xid, out window);
                         debug("Lost window[%s]: %s", xid.to_string(), window.get_class_instance_name ());
                         window_closed (window);
+                        Thread.yield ();
                     }
-                    remove_xid (xid);
+                    //remove_xid (xid);
+                    removals.append (xid);
                 }
-                return true;
-            });
+            }
+            foreach (ulong xid in removals) {
+                remove_xid (xid);
+            }
         }
-        return 0;
     }
 
     public void add_xid (ulong xid) {
@@ -98,63 +108,69 @@ public class WaylandWindowListener : GLib.Object {
         return list.size == 0;
     }
 
-    public List<ulong> get_xid_list() {
-        List<ulong> ids = new List<ulong> ();
-
+    private string? spawn_sync_and_return (string[] spawn_args) {
         try {
-            string[] spawn_args = {"xdotool", "search", "--onlyvisible",  "--sync", ".+"};
             string[] spawn_env = Environ.get ();
-            string ls_stdout;
-            string ls_stderr;
+            string p_stdout;
+            string p_stderr;
 
+            debug("Spawning %s", string.joinv (" ", spawn_args));
             Process.spawn_sync ("/",
                                 spawn_args,
                                 spawn_env,
                                 SpawnFlags.SEARCH_PATH,
                                 null,
-                                out ls_stdout,
-                                out ls_stderr,
+                                out p_stdout,
+                                out p_stderr,
                                 null);
 
-            foreach (string xid in ls_stdout.split("\n")) {
-                ids.append(ulong.parse(xid));
-            }
+            return p_stdout;
 
         } catch (SpawnError e) {
             critical ("Error: %s", e.message);
+        }
+
+        return null;
+    }
+
+    public List<ulong> get_xid_list() {
+        List<ulong> ids = new List<ulong> ();
+
+        string[] spawn_args = {"xdotool", "search", "--onlyvisible",  "--sync", ".+"};
+        string? xdotool_output = spawn_sync_and_return (spawn_args);
+
+        if (xdotool_output != null) {
+            foreach (string xid in xdotool_output.split("\n")) {
+                if (xid.length > 0) {
+                    debug("Found xid: %s", xid);
+                    ulong parsed_xid = ulong.parse (xid);
+                    ids.append(parsed_xid);
+                }
+            }
         }
 
         return ids;
     }
 
-    public bool get_class_instance_name(ulong xid, out string class_instance_name) {
-        try {
-            string[] spawn_args = {"xprop", "-id", xid.to_string(),  "WM_CLASS"};
-            string[] spawn_env = Environ.get ();
-            string ls_stdout;
-            string ls_stderr;
+    public bool get_class_instance_name(ulong xid, out string? class_instance_name) {
+        string[] spawn_args = {"xprop", "-id", xid.to_string(),  "WM_CLASS"};
+        string? xprop_output = spawn_sync_and_return (spawn_args);
 
-            Process.spawn_sync ("/",
-                                spawn_args,
-                                spawn_env,
-                                SpawnFlags.SEARCH_PATH,
-                                null,
-                                out ls_stdout,
-                                out ls_stderr,
-                                null);
-
-            if ("WM_CLASS(STRING)" in ls_stdout) {
+        if (xprop_output != null) {
+            debug ("Checking for wm_class");
+            if ("WM_CLASS(STRING)" in xprop_output) {
                 Regex r = /^.* = \"(?P<wmclass>.*)\",.*$/;
                 MatchInfo info;
-                if (r.match(ls_stdout, 0, out info)) {
+                if (r.match(xprop_output, 0, out info)) {
                     class_instance_name = info.fetch_named("wmclass");
+                    debug ("Found wm_class: %s", class_instance_name);
                     return true;
                 }
             }
-
-        } catch (SpawnError e) {
-            critical ("Error: %s", e.message);
+            debug ("Failed to find wm_class");
         }
+
+        class_instance_name = null;
 
         return false;
     }
