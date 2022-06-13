@@ -66,9 +66,6 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
 
-    private int delay = 100;
-    private uint timeout_id;
-
     public string[] ignore_apps = {
         "io.elementary.wingpanel",
         "com.github.bluesabre.darkbar",
@@ -166,63 +163,46 @@ public class MainWindow : Hdy.ApplicationWindow {
         set_sort_func (window_sort_function);
 
         listbox.bind_model ((ListModel)list_store, (obj) => {
-            debug ("Make box");
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
                 margin = 6
             };
 
-            debug ("Make image: %s", ((ForeignWindow)obj).icon_name);
             var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
                 pixel_size = 24
             };
 
-            debug ("Pack image");
             box.pack_start (image, false, false, 0);
 
-            debug ("Make label: %s", ((ForeignWindow)obj).app_name);
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
                 halign = Gtk.Align.START
             };
 
-            debug ("Pack label");
             box.pack_start (label, true, true, 0);
 
-            debug ("Make combo");
             var combo = new Gtk.ComboBoxText ();
-
-            debug ("Populate combo");
             combo.append ("none", _("None"));
             combo.append ("system", _("Follow System Theme"));
             combo.append ("light", _("Light"));
             combo.append ("dark", _("Dark"));
 
-            debug ("Get mode string: %s", ((ForeignWindow)obj).get_mode_string ());
             combo.active_id = ((ForeignWindow)obj).get_mode_string ();
 
-            debug ("Pack combo");
             box.pack_start (combo, false, false, 0);
 
             combo.changed.connect (() => {
-                debug ("Combo changed");
                 ((ForeignWindow)obj).set_mode_from_string (combo.active_id);
 
-                debug ("Check display mode");
                 if (((ForeignWindow)obj).mode == ForeignWindow.DisplayMode.NONE) {
-                    debug ("Forget window");
                     forget_window ((ForeignWindow)obj);
                 } else {
-                    debug ("Store window");
                     store_window ((ForeignWindow)obj);
                 }
 
-                debug ("All done");
                 return;
             });
 
-            debug ("Show all");
             box.show_all ();
 
-            debug ("And return the box");
             return box;
         });
 
@@ -237,71 +217,33 @@ public class MainWindow : Hdy.ApplicationWindow {
             update_windows ();
         });
 
-        if (is_wayland ()) {
-            debug("Initializaing Wayland Window Listener...");
-            var wayland_listener = new WaylandWindowListener(1);
-            wayland_listener.window_opened.connect ((window) => {
-                debug("Wayland window opened");
-                unowned string app_id = window.get_class_instance_name ();
-                debug("App ID: %s", app_id);
-                if (app_id == null) {
-                    if(timeout_id > 0) {
-                        Source.remove(timeout_id);
-                    }
-                    timeout_id = Timeout.add(delay, add_all_windows);
-                } else {
-                    add_wayland_window (window);
-                }
-            });
-
-            wayland_listener.window_closed.connect ((window) => {
-                debug("Wayland window closed");
+        var window_listener = new XishWindowListener(1);
+        window_listener.window_opened.connect ((window) => {
+            unowned string app_id = window.get_class_instance_name ();
+            if (app_id != null) {
                 ulong xid = window.get_xid ();
-                debug("XID: %s", xid.to_string ());
-                unowned string app_id = window.get_class_instance_name ();
-                debug("App ID: %s", app_id);
+                debug ("Window [%s] opened: %s", xid.to_string(), app_id);
+                add_window (window);
+            }
+        });
 
-                if (window_map.has_key (app_id)) {
-                    window_map[app_id].remove_xid (xid);
-                    if (window_map[app_id].empty ()) {
-                        uint pos = 0;
-                        if (list_store.find (window_map[app_id], out pos)) {
-                            list_store.remove (pos);
-                        }
-                        window_map.unset (app_id);
+        window_listener.window_closed.connect ((window) => {
+            ulong xid = window.get_xid ();
+            unowned string app_id = window.get_class_instance_name ();
+
+            debug ("Window [%s] closed: %s", xid.to_string(), app_id);
+
+            if (window_map.has_key (app_id)) {
+                window_map[app_id].remove_xid (xid);
+                if (window_map[app_id].empty ()) {
+                    uint pos = 0;
+                    if (list_store.find (window_map[app_id], out pos)) {
+                        list_store.remove (pos);
                     }
+                    window_map.unset (app_id);
                 }
-            });
-        } else {
-            var screen = Wnck.Screen.get_default ();
-            screen.window_opened.connect ((window) => {
-                unowned string app_id = window.get_class_instance_name ();
-                if (app_id == null) {
-                    if(timeout_id > 0) {
-                        Source.remove(timeout_id);
-                    }
-                    timeout_id = Timeout.add(delay, add_all_windows);
-                } else {
-                    add_window (window);
-                }
-            });
-    
-            screen.window_closed.connect ((window) => {
-                ulong xid = window.get_xid ();
-                unowned string app_id = window.get_class_instance_name ();
-    
-                if (window_map.has_key (app_id)) {
-                    window_map[app_id].remove_xid (xid);
-                    if (window_map[app_id].empty ()) {
-                        uint pos = 0;
-                        if (list_store.find (window_map[app_id], out pos)) {
-                            list_store.remove (pos);
-                        }
-                        window_map.unset (app_id);
-                    }
-                }
-            });
-        }
+            }
+        });
 
         show.connect (() => {
             if (settings.get_boolean ("show-welcome")) {
@@ -317,12 +259,6 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
-    }
-
-    private bool is_wayland () {
-        string[] spawn_env = Environ.get ();
-        unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
-        return wayland_display != null;
     }
 
     private ForeignWindow.DisplayMode get_default_mode () {
@@ -390,35 +326,9 @@ public class MainWindow : Hdy.ApplicationWindow {
         return box;
     }
 
-    private bool add_all_windows () {
-        var screen = Wnck.Screen.get_default ();
-        unowned List<Wnck.Window> windows = screen.get_windows ();
-        foreach (Wnck.Window window in windows) {
-            add_window (window);
-        }
-        return Source.REMOVE;
-    }
-
-    private void add_window (Wnck.Window window) {
+    private void add_window (XishWindow window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
-
-        if (app_id in ignore_apps) {
-            return;
-        }
-
-        if (!window_map.has_key (app_id)) {
-            append (app_id);
-        }
-        window_map[app_id].add_xid (xid);
-    }
-
-    private void add_wayland_window (WaylandWindow window) {
-        debug("Adding Wayland window...");
-        ulong xid = window.get_xid ();
-        debug("XID: %s", xid.to_string());
-        unowned string app_id = window.get_class_instance_name ();
-        debug("App ID: %s", app_id);
 
         if (app_id in ignore_apps) {
             return;
