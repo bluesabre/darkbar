@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
- * SPDX-FileCopyrightText: 2021 Sean Davis <sean@bluesabre.org>
+ * SPDX-FileCopyrightText: 2021-2022 Sean Davis <sean@bluesabre.org>
  */
 
 public class MyApp : Gtk.Application {
@@ -61,6 +61,9 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool prefers_dark { get; set; }
     public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
+
+    private XishWindowListener window_listener { get; set; }
+    public uint window_polling_frequency { get; set; }
 
     private int delay = 100;
     private uint timeout_id;
@@ -149,6 +152,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         hbox = get_default_theme_switcher (get_default_mode_string ());
         listbox.insert (hbox, 1);
 
+        if (is_wayland ()) {
+            hbox = get_window_polling_input ();
+            listbox.insert (hbox, 2);
+        }
+
         var app_prefs = new Hdy.PreferencesGroup () {
             title = _("Active Applications")
         };
@@ -214,7 +222,8 @@ public class MainWindow : Hdy.ApplicationWindow {
         });
 
         if (is_wayland()) {
-            var window_listener = new XishWindowListener(1);
+            window_listener = new XishWindowListener();
+
             window_listener.window_opened.connect ((window) => {
                 unowned string app_id = window.get_class_instance_name ();
                 if (app_id != null) {
@@ -223,14 +232,17 @@ public class MainWindow : Hdy.ApplicationWindow {
                     add_xish_window (window);
                 }
             });
-    
+
             window_listener.window_closed.connect ((window) => {
                 ulong xid = window.get_xid ();
                 unowned string app_id = window.get_class_instance_name ();
                 window_closed (xid, app_id);
             });
+
+            window_listener.set_timeout (get_default_window_polling_frequency ());
         } else {
             var screen = Wnck.Screen.get_default ();
+
             screen.window_opened.connect ((window) => {
                 unowned string app_id = window.get_class_instance_name ();
                 if (app_id == null) {
@@ -239,6 +251,7 @@ public class MainWindow : Hdy.ApplicationWindow {
                     }
                     timeout_id = Timeout.add(delay, add_all_wnck_windows);
                 } else {
+                    ulong xid = window.get_xid ();
                     debug ("Window [%s] opened: %s", xid.to_string(), app_id);
                     add_wnck_window (window);
                 }
@@ -344,6 +357,37 @@ public class MainWindow : Hdy.ApplicationWindow {
         combo.changed.connect (() => {
             var mode = ForeignWindow.get_mode_from_string (combo.active_id);
             settings.set_uint("default-theme", mode);
+            return;
+        });
+
+        box.show_all ();
+
+        return box;
+    }
+
+    private uint get_default_window_polling_frequency () {
+        return settings.get_uint ("window-polling-frequency");
+    }
+
+    private Gtk.Box get_window_polling_input () {
+        var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 6
+        };
+
+        var label = new Gtk.Label (_("Window polling frequency")) {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        box.pack_start (label, true, true, 0);
+
+        var spin = new Gtk.SpinButton.with_range (1.0, 60.0, 1.0);
+        spin.set_value (get_default_window_polling_frequency ());
+        box.pack_start (spin, false, false, 0);
+
+        spin.changed.connect (() => {
+            var timeout = (uint)spin.value;
+            settings.set_uint("window-polling-frequency", timeout);
+            window_listener.set_timeout (timeout);
             return;
         });
 

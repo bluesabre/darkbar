@@ -11,15 +11,19 @@ public class XishWindowListener : GLib.Object {
     public Gee.HashSet<ulong> list { get; set; }
     public Gee.HashMap<ulong, XishWindow> windows { get; set; }
     public uint interval { get; set; }
-
-    public XishWindowListener (uint interval) {
-        Object (interval: interval);
-    }
+    private uint timeout_id;
 
     construct {
         list = new Gee.HashSet<ulong> ();
         windows = new Gee.HashMap<ulong, XishWindow> ();
-        Timeout.add_seconds(interval, refresh_windows);
+    }
+
+    public void set_timeout (uint timeout) {
+        interval = timeout;
+        if (timeout_id > 0) {
+            Source.remove (timeout_id);
+        }
+        timeout_id = Timeout.add_seconds(interval, refresh_windows);
     }
 
     private void found_window (ulong xid, string class_instance_name) {
