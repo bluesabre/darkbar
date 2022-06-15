@@ -10,8 +10,13 @@ public class XishWindowListener : GLib.Object {
 
     public Gee.HashSet<ulong> list { get; set; }
     public Gee.HashMap<ulong, XishWindow> windows { get; set; }
+    public bool sandboxed { get; set; }
     public uint interval { get; set; }
     private uint timeout_id;
+
+    public XishWindowListener (bool sandboxed) {
+        Object (sandboxed: sandboxed);
+    }
 
     construct {
         list = new Gee.HashSet<ulong> ();
@@ -91,7 +96,7 @@ public class XishWindowListener : GLib.Object {
             string[] spawn_env = Environ.get ();
             string p_stdout;
             string p_stderr;
-            
+
             Process.spawn_sync ("/",
                                 spawn_args,
                                 spawn_env,
@@ -100,6 +105,18 @@ public class XishWindowListener : GLib.Object {
                                 out p_stdout,
                                 out p_stderr,
                                 null);
+
+            if (sandboxed && "flatpak" in p_stdout) {
+                string[] s_stdout = {};
+                foreach (string line in p_stdout.split("\n")) {
+                    if ("flatpak" in line) {
+                        // Strip out surprise Flatpak output
+                    } else {
+                        s_stdout += line;
+                    }
+                }
+                p_stdout = string.joinv("\n", s_stdout);
+            }
 
             return p_stdout;
 
@@ -113,15 +130,22 @@ public class XishWindowListener : GLib.Object {
 
     public List<ulong> get_xid_list() {
         List<ulong> ids = new List<ulong> ();
+        string[] spawn_args;
 
-        string[] spawn_args = {"xdotool", "search", "--onlyvisible",  "--sync", ".+"};
+        if (sandboxed) {
+            spawn_args = {"flatpak-spawn", "--host", "xdotool", "search", "--onlyvisible",  "--sync", ".+"};
+        } else {
+            spawn_args = {"xdotool", "search", "--onlyvisible",  "--sync", ".+"};
+        }
         string? xdotool_output = spawn_sync_and_return (spawn_args);
 
         if (xdotool_output != null) {
             foreach (string xid in xdotool_output.split("\n")) {
                 if (xid.length > 0) {
                     ulong parsed_xid = ulong.parse (xid);
-                    ids.append(parsed_xid);
+                    if (parsed_xid > 0) {
+                        ids.append(parsed_xid);
+                    }
                 }
             }
         }
@@ -130,7 +154,12 @@ public class XishWindowListener : GLib.Object {
     }
 
     public bool get_class_instance_name(ulong xid, out string? class_instance_name) {
-        string[] spawn_args = {"xprop", "-id", xid.to_string(),  "WM_CLASS"};
+        string[] spawn_args;
+        if (sandboxed) {
+            spawn_args = {"flatpak-spawn", "--host", "xprop", "-id", xid.to_string(),  "WM_CLASS"};
+        } else {
+            spawn_args = {"xprop", "-id", xid.to_string(),  "WM_CLASS"};
+        }
         string? xprop_output = spawn_sync_and_return (spawn_args);
 
         if (xprop_output != null) {

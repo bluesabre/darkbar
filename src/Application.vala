@@ -222,7 +222,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         });
 
         if (is_wayland()) {
-            window_listener = new XishWindowListener();
+            window_listener = new XishWindowListener(sandboxed);
 
             window_listener.window_opened.connect ((window) => {
                 unowned string app_id = window.get_class_instance_name ();
