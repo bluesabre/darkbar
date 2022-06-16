@@ -60,6 +60,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
     public bool sandboxed { get; set; }
+    public FlatpakApplicationFinder flatpak_finder { get; set; }
     public bool run_in_background { get; set; }
 
     private XishWindowListener window_listener { get; set; }
@@ -89,6 +90,8 @@ public class MainWindow : Hdy.ApplicationWindow {
         File file = File.new_for_path ("/var/run/host");
         if (file.query_exists (null)) {
             sandboxed = true;
+            flatpak_finder = new FlatpakApplicationFinder ();
+            flatpak_finder.get_apps ();
         }
 
         settings = new GLib.Settings ("com.github.bluesabre.darkbar");
@@ -176,12 +179,16 @@ public class MainWindow : Hdy.ApplicationWindow {
             };
 
             var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
-                pixel_size = 24
+                pixel_size = 24,
+                tooltip_text = ((ForeignWindow)obj).icon_name,
+                has_tooltip = true
             };
             box.pack_start (image, false, false, 0);
 
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
-                halign = Gtk.Align.START
+                halign = Gtk.Align.START,
+                tooltip_text = ((ForeignWindow)obj).app_id,
+                has_tooltip = true
             };
             box.pack_start (label, true, true, 0);
 
@@ -452,7 +459,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         dialog.show ();
     }
 
-    private Gee.HashMap<string, DesktopAppInfo> get_appinfos_by_path (string path) {
+    private Gee.HashMap<string, DesktopAppInfo> get_sandboxed_appinfos_by_path (string path) {
         Gee.HashMap<string, DesktopAppInfo> appinfos = new Gee.HashMap<string, DesktopAppInfo> ();
 
         try {
@@ -467,57 +474,12 @@ public class MainWindow : Hdy.ApplicationWindow {
                         var filename = path + "/" + info.get_name ();
                         var appinfo = new DesktopAppInfo.from_filename (filename);
                         if (appinfo != null) {
-                            appinfos[appinfo.get_id ()] = appinfo;
+                            var sandboxed_app = new SandboxedApplication.from_app_info (appinfo);
+                            appinfos[sandboxed_app.app_id] = sandboxed_app.app_info;
                         } else {
-                            var keyfile = new KeyFile ();
-                            try {
-                                keyfile.load_from_file (filename, KeyFileFlags.NONE);
-                                string? binary = null;
-                                if (keyfile.has_key ("Desktop Entry", "TryExec")) {
-                                    binary = keyfile.get_string ("Desktop Entry", "TryExec");
-                                }
-                                if (binary == null) {
-                                    binary = keyfile.get_string ("Desktop Entry", "Exec");
-                                }
-                                if (binary != null) {
-                                    if (binary.contains (" ")) {
-                                        binary = binary.split(" ", 2)[0];
-                                    }
-                                    if (binary.has_prefix ("/")) {
-                                        binary = "/run/host" + binary;
-                                        keyfile.set_string ("Desktop Entry", "Exec", binary);
-                                    } else {
-                                        // ./run/host/usr/bin/guake
-                                        // Standard path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-                                        string[] paths = {
-                                            "/usr/local/sbin",
-                                            "/usr/local/bin",
-                                            "/usr/sbin",
-                                            "/usr/bin",
-                                            "/sbin",
-                                            "/bin",
-                                            "/usr/games",
-                                            "/usr/local/games",
-                                            "/snap/bin"
-                                        };
-                                        foreach (string basedir in paths) {
-                                            var fullpath = "/run/host" + basedir + "/" + binary;
-                                            File file = File.new_for_path (fullpath);
-                                            if (file.query_exists (null)) {
-                                                binary = fullpath;
-                                                keyfile.set_string ("Desktop Entry", "Exec", binary);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    appinfo = new DesktopAppInfo.from_keyfile (keyfile);
-                                    if (appinfo != null) {
-                                        var app_id = Path.get_basename (filename);
-                                        appinfos[app_id] = appinfo;
-                                    }
-                                }
-                            } catch (Error e) {
-                                warning ("Keyfile Processing Error: " + e.message);
+                            var sandboxed_app = new SandboxedApplication.from_filename (filename);
+                            if (sandboxed_app != null) {
+                                appinfos[sandboxed_app.app_id] = sandboxed_app.app_info;
                             }
                         }
                     }
@@ -532,7 +494,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     private DesktopAppInfo? get_sandboxed_appinfo (string app_id) {
-        Gee.HashMap<string, DesktopAppInfo> app_infos = get_appinfos_by_path ("/run/host/usr/share/applications");
+        Gee.HashMap<string, DesktopAppInfo> app_infos = get_sandboxed_appinfos_by_path ("/run/host/usr/share/applications");
 
         string? id = find_app_info_in_map (app_id, app_infos);
 

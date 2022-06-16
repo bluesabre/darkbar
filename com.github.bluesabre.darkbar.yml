@@ -22,6 +22,8 @@ command: com.github.bluesabre.darkbar
 finish-args:
   - '--filesystem=host:ro'
   - '--filesystem=xdg-config/autostart:create'
+  - '--filesystem=/var/lib/flatpak/app:ro'
+  - '--filesystem=xdg-data/flatpak/app:ro'
 
   - '--share=ipc'
   - '--socket=fallback-x11'
