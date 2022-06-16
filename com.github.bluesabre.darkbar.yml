@@ -4,9 +4,13 @@ app-id: com.github.bluesabre.darkbar
 # Instead of manually specifying a long list of build and runtime dependencies,
 # we can use a convenient pre-made runtime and SDK. For this example, we'll be
 # using the runtime and SDK provided by elementary.
-runtime: io.elementary.Platform
-runtime-version: '6'
-sdk: io.elementary.Sdk
+#runtime: io.elementary.Platform
+#runtime-version: '6'
+#sdk: io.elementary.Sdk
+
+runtime: org.gnome.Platform
+runtime-version: '42'
+sdk: org.gnome.Sdk
 
 # This should match the exec line in your .desktop file and usually is the same
 # as your app ID
@@ -26,6 +30,7 @@ finish-args:
   - '--system-talk-name=org.freedesktop.Accounts'
 
   - '--talk-name=org.gnome.SettingsDaemon'
+  - '--talk-name=org.freedesktop.Flatpak'
 
 # This section is where you list all the source code required to build your app.
 # If we had external dependencies that weren't included in our SDK, we would list

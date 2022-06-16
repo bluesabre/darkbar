@@ -6,7 +6,7 @@
 
 It allows the following settings for each application:
 
-- None: Let the application decide</li>
+- None: Let the application decide
 - Follow System Theme: Use the same theme as the operating system
 - Light: Prefer the "light" theme variant
 - Dark: Prefer the "dark" theme variant
@@ -22,6 +22,7 @@ You'll need the following dependencies:
 * meson >= 0.43.0
 * valac
 * xprop
+* xdotool (for Wayland support)
 
 Run `meson build` to configure the build environment. Change to the build directory and run `ninja` to build
 

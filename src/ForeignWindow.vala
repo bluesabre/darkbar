@@ -130,7 +130,7 @@ public class ForeignWindow : GLib.Object {
             }
             var xprop = "xprop";
             if (sandboxed) {
-                xprop = "/var/run/host/bin/xprop";
+                xprop = "flatpak-spawn --host xprop";
             }
             var cmd = "%s -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT '%s'".printf (xprop, xid, modestr);
             try {
