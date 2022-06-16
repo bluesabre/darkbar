@@ -76,6 +76,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         "gnome-shell"
     };
 
+    public string[] ignore_app_prefixes = {
+        "join?",
+        "crx__"
+    };
+
     static construct {
         Hdy.init ();
     }
@@ -91,7 +96,6 @@ public class MainWindow : Hdy.ApplicationWindow {
         if (file.query_exists (null)) {
             sandboxed = true;
             flatpak_finder = new FlatpakApplicationFinder ();
-            flatpak_finder.get_apps ();
         }
 
         settings = new GLib.Settings ("com.github.bluesabre.darkbar");
@@ -178,17 +182,45 @@ public class MainWindow : Hdy.ApplicationWindow {
                 margin = 6
             };
 
-            var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
-                pixel_size = 24,
-                tooltip_text = ((ForeignWindow)obj).icon_name,
-                has_tooltip = true
-            };
+            Gtk.Image? image;
+            var icon_name = ((ForeignWindow)obj).icon_name;
+            string? icon_filename;
+
+            if (icon_name.has_prefix ("/")) {
+                icon_filename = icon_name;
+            } else {
+                image = new Gtk.Image.from_icon_name (icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
+                    pixel_size = 24,
+                    tooltip_text = icon_name,
+                    has_tooltip = true
+                };
+
+                if (sandboxed) {
+                    icon_filename = GLib.Path.build_filename(
+                        "/", "run", "host", "usr", "share", "pixmaps", icon_name + ".png"
+                    );
+                }
+            }
+
+            if (icon_filename != null) {
+                File image_file = File.new_for_path (icon_filename);
+                if (image_file.query_exists (null)) {
+                    var icon = new GLib.FileIcon(image_file);
+                    image = new Gtk.Image.from_gicon (icon, Gtk.IconSize.LARGE_TOOLBAR) {
+                        pixel_size = 24,
+                        tooltip_text = icon_name,
+                        has_tooltip = true
+                    };
+                }
+            }
+
             box.pack_start (image, false, false, 0);
 
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
                 halign = Gtk.Align.START,
                 tooltip_text = ((ForeignWindow)obj).app_id,
-                has_tooltip = true
+                has_tooltip = true,
+                ellipsize = Pango.EllipsizeMode.MIDDLE
             };
             box.pack_start (label, true, true, 0);
 
@@ -428,6 +460,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         if (app_id in ignore_apps) {
             return;
         }
+        foreach (string prefix in ignore_app_prefixes) {
+            if (app_id.has_prefix (prefix)) {
+                return;
+            }
+        }
         if (!window_map.has_key (app_id)) {
             append (app_id);
         }
@@ -497,6 +534,16 @@ public class MainWindow : Hdy.ApplicationWindow {
         Gee.HashMap<string, DesktopAppInfo> app_infos = get_sandboxed_appinfos_by_path ("/run/host/usr/share/applications");
 
         string? id = find_app_info_in_map (app_id, app_infos);
+
+        if (id != null) {
+            if (id in app_infos.keys) {
+                return app_infos[id];
+            }
+        }
+
+        app_infos = flatpak_finder.get_appinfos ();
+
+        id = find_app_info_in_map (app_id, app_infos);
 
         if (id != null) {
             if (id in app_infos.keys) {

@@ -25,10 +25,31 @@ public class SandboxedApplication : GLib.Object {
         );
     }
 
-    public SandboxedApplication.from_filename (string filename) {
+    public SandboxedApplication.from_filename_and_export_directory (string filename, string? export_directory) {
         var keyfile = new KeyFile ();
         try {
             keyfile.load_from_file (filename, KeyFileFlags.NONE);
+            if (export_directory != null) {
+                string? icon_name = keyfile.get_string ("Desktop Entry", "Icon");
+                string[] sizes = {
+                    "scalable", "32x32", "48x48", "64x64", "128x128", "256x256", "512x512"
+                };
+                string[] extensions = {
+                    ".png", ".svg"
+                };
+                foreach (string size in sizes) {
+                    foreach (string extension in extensions) {
+                        string icon_filename = GLib.Path.build_filename (
+                            export_directory, "share", "icons", "hicolor", size, "apps", icon_name + extension
+                        );
+                        File file = File.new_for_path (icon_filename);
+                        if (file.query_exists (null)) {
+                            keyfile.set_string ("Desktop Entry", "Icon", icon_filename);
+                            break;
+                        }
+                    }
+                }
+            }
             string? binary = null;
             if (keyfile.has_key ("Desktop Entry", "TryExec")) {
                 binary = keyfile.get_string ("Desktop Entry", "TryExec");
@@ -76,6 +97,10 @@ public class SandboxedApplication : GLib.Object {
         } catch (Error e) {
             warning ("Keyfile Processing Error: " + e.message);
         }
+    }
+
+    public SandboxedApplication.from_filename (string filename) {
+        this.from_filename_and_export_directory (filename, null);
     }
 
 }

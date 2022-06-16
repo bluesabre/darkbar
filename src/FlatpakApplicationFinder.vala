@@ -50,18 +50,9 @@ public class FlatpakApplicationFinder : GLib.Object {
         return configPath;
     }
 
-    public void get_apps() {
-        // ./app/com.github.tchx84.Flatseal/x86_64/stable/09d6d0d42d1df5db4fcbd55507e8c32e134f4f6ff334eb5e63af2978db8e4e1a/export/share/applications/com.github.tchx84.Flatseal.desktop
-        // ./app/com.github.tchx84.Flatseal/x86_64/stable/09d6d0d42d1df5db4fcbd55507e8c32e134f4f6ff334eb5e63af2978db8e4e1a/export/share/icons/hicolor/scalable/apps/com.github.tchx84.Flatseal.Flatpak.svg
-        warning("System Path: %s", get_system_path ());
+    private string[] listdir (string path) {
+        string[] files = {};
 
-        var apps_path = GLib.Path.build_filename(
-            get_system_path (), "app"
-        );
-        get_apps_at_path (apps_path);
-    }
-
-    private void get_apps_at_path (string path) {
         try {
             var directory = File.new_for_path (path);
 
@@ -69,18 +60,58 @@ public class FlatpakApplicationFinder : GLib.Object {
 
             FileInfo file_info;
             while ((file_info = enumerator.next_file ()) != null) {
-                var app_id = file_info.get_name ();
-                stdout.printf ("%s\n", file_info.get_name ());
-                var filename = GLib.Path.build_filename (
-                    path, app_id
+                var filename = file_info.get_name ();
+                filename = GLib.Path.build_filename (
+                    path, filename
                 );
-                var export = descend_app (filename);
-                stdout.printf ("%s\n", export);
+                files += filename;
             }
 
         } catch (Error e) {
             stderr.printf ("Error: %s\n", e.message);
         }
+
+        return files;
+    }
+
+    public Gee.HashMap<string, DesktopAppInfo> get_appinfos () {
+        Gee.HashMap<string, DesktopAppInfo> appinfos = new Gee.HashMap<string, DesktopAppInfo> ();
+
+        string[] paths = {
+            GLib.Path.build_filename(
+                get_system_path (), "app"
+            ),
+            GLib.Path.build_filename(
+                get_user_path (), "app"
+            )
+        };
+
+        foreach (string path in paths) {
+            string[] files = listdir (path);
+            foreach (string directory in files) {
+                var export = descend_app (directory);
+                var applications = GLib.Path.build_filename (
+                    export, "share", "applications"
+                );
+                string[] apps = listdir (applications);
+                foreach (string filename in apps) {
+                    if (filename.has_suffix (".desktop")) {
+                        SandboxedApplication? sandboxed_app;
+                        var appinfo = new DesktopAppInfo.from_filename (filename);
+                        if (appinfo != null) {
+                            sandboxed_app = new SandboxedApplication.from_app_info (appinfo);
+                        } else {
+                            sandboxed_app = new SandboxedApplication.from_filename_and_export_directory (filename, export);
+                        }
+                        if (sandboxed_app != null) {
+                            appinfos[sandboxed_app.app_id] = sandboxed_app.app_info;
+                        }
+                    }
+                }
+            }
+        }
+
+        return appinfos;
     }
 
     private string? descend_app (string path) {
