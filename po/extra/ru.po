@@ -2,79 +2,88 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the extra package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
+# ятебясъем, 2022
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: extra\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-10 10:58+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: ятебясъем, 2022\n"
+"Language-Team: Russian (https://www.transifex.com/bluesabreorg/teams/99550/ru/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: data/com.github.bluesabre.darkbar.desktop.in:3
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:8
 msgid "Darkbar"
-msgstr ""
+msgstr "Darkbar"
 
 #: data/com.github.bluesabre.darkbar.desktop.in:4
 msgid "Darkbar App"
-msgstr ""
+msgstr "Приложение Darkbar"
 
 #: data/com.github.bluesabre.darkbar.desktop.in:5
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:10
 msgid "Darken application titlebars based on your preference"
-msgstr ""
+msgstr "Затемняйте заголовки окон так, как вам нравится"
 
 #: data/com.github.bluesabre.darkbar.desktop.in:8
 msgid "com.github.bluesabre.darkbar"
-msgstr ""
+msgstr "com.github.bluesabre.darkbar"
 
 #: data/com.github.bluesabre.darkbar.desktop.in:10
 msgid "Customization;Titlebar;"
-msgstr ""
+msgstr "Customization;Titlebar;Персонализация;Заголовки окон;"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:9
 msgid "Sean Davis"
-msgstr ""
+msgstr "Шон Дэвис"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:13
 msgid ""
 "Darkbar replaces window decorations with your preference of a dark or light "
 "theme variant."
 msgstr ""
+"Darkbar заменяет оформление окон по вашему предпочтению на тёмный или "
+"светлый вариант."
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:14
 msgid "It allows the following settings for each application:"
-msgstr ""
+msgstr "Для каждого приложения доступны следующие варианты настройки:"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:16
 msgid "None: Let the application decide"
-msgstr ""
+msgstr "По умолчанию: заголовок по усмотрению приложения"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:17
 msgid "Follow System Theme: Use the same theme as the operating system"
-msgstr ""
+msgstr "Как в системе: использовать ту же тему, что и операционная система"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:18
 msgid "Light: Prefer the \"light\" theme variant"
-msgstr ""
+msgstr "Светлая тема: использовать оформление из светлой темы"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:19
 msgid "Dark: Prefer the \"dark\" theme variant"
-msgstr ""
+msgstr "Тёмная тема: использовать оформление из тёмной темы"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:21
 msgid ""
 "Only applications using traditional decorations are supported. If your app "
 "is unaffected by Darkbar, the application controls its window decorations."
 msgstr ""
+"Поддерживаются только приложения, использующие традиционный макет заголовка."
+" Если Darkbar не влияет на приложение, значит, оно само управляет "
+"оформлением окна."
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:36
 msgid "The application window"
-msgstr ""
+msgstr "Окно приложения"

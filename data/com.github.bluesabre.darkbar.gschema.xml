@@ -16,5 +16,10 @@
       <summary>Default theme</summary>
       <summary>Default theme to use for newly discovered windows</summary>
     </key>
+    <key name="window-polling-frequency" type="u">
+      <default>2</default>
+      <summary>Window polling frequency</summary>
+      <summary>How frequently to poll for windows (Wayland)</summary>
+    </key>
   </schema>
 </schemalist>

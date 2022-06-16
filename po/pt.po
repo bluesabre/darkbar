@@ -2,60 +2,64 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the com.github.bluesabre.darkbar package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
+# Hugo Carvalho <hugokarvalho@hotmail.com>, 2021
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bluesabre.darkbar\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-10 11:00+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>, 2021\n"
+"Language-Team: Portuguese (https://www.transifex.com/bluesabreorg/teams/99550/pt/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/Application.vala:34 src/Application.vala:53 src/Application.vala:97
 msgid "Darkbar"
-msgstr ""
+msgstr "Darkbar"
 
 #: src/Application.vala:134
 msgid "Darkbar Preferences"
-msgstr ""
+msgstr "Preferências da Darkbar"
 
 #: src/Application.vala:152
 msgid "Active Applications"
-msgstr ""
+msgstr "Aplicações ativas"
 
 #: src/Application.vala:180 src/Application.vala:308
 msgid "None"
-msgstr ""
+msgstr "Nenhuma"
 
 #: src/Application.vala:181 src/Application.vala:309
 msgid "Follow System Theme"
-msgstr ""
+msgstr "Seguir o tema do sistema"
 
 #: src/Application.vala:182 src/Application.vala:310
 msgid "Light"
-msgstr ""
+msgstr "Clara"
 
 #: src/Application.vala:183 src/Application.vala:311
 msgid "Dark"
-msgstr ""
+msgstr "Escura"
 
 #: src/Application.vala:274
 msgid "Run in the background"
-msgstr ""
+msgstr "Executar em segundo plano"
 
 #: src/Application.vala:301
 msgid "Default style for new windows"
-msgstr ""
+msgstr "Estilo predefinido para novas janelas"
 
 #: src/Application.vala:351
 msgid "Thank you for using Darkbar!"
-msgstr ""
+msgstr "Obrigado por usar a Darkbar!"
 
 #: src/Application.vala:352
 msgid ""
@@ -63,7 +67,10 @@ msgid ""
 "theme variant. Only applications using a standard titlebar layout are "
 "supported."
 msgstr ""
+"A Darkbar substitui as decorações de janela com a sua preferência por uma "
+"variante temática escura ou clara. Apenas são suportadas aplicações que "
+"utilizem uma disposição predefinida da barra de título."
 
 #: src/Application.vala:356
 msgid "Show this dialog next time."
-msgstr ""
+msgstr "Mostrar esta janela na próxima vez."

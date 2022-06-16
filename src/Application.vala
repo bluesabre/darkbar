@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
- * SPDX-FileCopyrightText: 2021 Sean Davis <sean@bluesabre.org>
+ * SPDX-FileCopyrightText: 2021-2022 Sean Davis <sean@bluesabre.org>
  */
 
 public class MyApp : Gtk.Application {
@@ -62,13 +62,17 @@ public class MainWindow : Hdy.ApplicationWindow {
     public bool sandboxed { get; set; }
     public bool run_in_background { get; set; }
 
+    private XishWindowListener window_listener { get; set; }
+    public uint window_polling_frequency { get; set; }
+
     private int delay = 100;
     private uint timeout_id;
 
     public string[] ignore_apps = {
         "io.elementary.wingpanel",
         "com.github.bluesabre.darkbar",
-        "plank"
+        "plank",
+        "gnome-shell"
     };
 
     static construct {
@@ -148,6 +152,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         hbox = get_default_theme_switcher (get_default_mode_string ());
         listbox.insert (hbox, 1);
 
+        if (is_wayland ()) {
+            hbox = get_window_polling_input ();
+            listbox.insert (hbox, 2);
+        }
+
         var app_prefs = new Hdy.PreferencesGroup () {
             title = _("Active Applications")
         };
@@ -203,44 +212,57 @@ public class MainWindow : Hdy.ApplicationWindow {
 
         listbox.show_all ();
 
-        var granite_settings = Granite.Settings.get_default ();
+        var style_manager = Hdy.StyleManager.get_default();
+        style_manager.color_scheme = Hdy.ColorScheme.PREFER_LIGHT;
 
-        prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
-        gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
-        granite_settings.notify["prefers-color-scheme"].connect (() => {
-            prefers_dark = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
-            gtk_settings.gtk_application_prefer_dark_theme = prefers_dark;
+        prefers_dark = style_manager.dark;
+        style_manager.notify["dark"].connect (() => {
+            prefers_dark = style_manager.dark;
             update_windows ();
         });
 
-        var screen = Wnck.Screen.get_default ();
-        screen.window_opened.connect ((window) => {
-            unowned string app_id = window.get_class_instance_name ();
-            if (app_id == null) {
-                if(timeout_id > 0) {
-                    Source.remove(timeout_id);
+        if (is_wayland()) {
+            window_listener = new XishWindowListener(sandboxed);
+
+            window_listener.window_opened.connect ((window) => {
+                unowned string app_id = window.get_class_instance_name ();
+                if (app_id != null) {
+                    ulong xid = window.get_xid ();
+                    debug ("Window [%s] opened: %s", xid.to_string(), app_id);
+                    add_xish_window (window);
                 }
-                timeout_id = Timeout.add(delay, add_all_windows);
-            } else {
-                add_window (window);
-            }
-        });
+            });
 
-        screen.window_closed.connect ((window) => {
-            ulong xid = window.get_xid ();
-            unowned string app_id = window.get_class_instance_name ();
+            window_listener.window_closed.connect ((window) => {
+                ulong xid = window.get_xid ();
+                unowned string app_id = window.get_class_instance_name ();
+                window_closed (xid, app_id);
+            });
 
-            if (window_map.has_key (app_id)) {
-                window_map[app_id].remove_xid (xid);
-                if (window_map[app_id].empty ()) {
-                    uint pos = 0;
-                    if (list_store.find (window_map[app_id], out pos)) {
-                        list_store.remove (pos);
+            window_listener.set_timeout (get_default_window_polling_frequency ());
+        } else {
+            var screen = Wnck.Screen.get_default ();
+
+            screen.window_opened.connect ((window) => {
+                unowned string app_id = window.get_class_instance_name ();
+                if (app_id == null) {
+                    if (timeout_id > 0) {
+                        Source.remove(timeout_id);
                     }
-                    window_map.unset (app_id);
+                    timeout_id = Timeout.add(delay, add_all_wnck_windows);
+                } else {
+                    ulong xid = window.get_xid ();
+                    debug ("Window [%s] opened: %s", xid.to_string(), app_id);
+                    add_wnck_window (window);
                 }
-            }
-        });
+            });
+
+            screen.window_closed.connect ((window) => {
+                ulong xid = window.get_xid ();
+                unowned string app_id = window.get_class_instance_name ();
+                window_closed (xid, app_id);
+            });
+        }
 
         show.connect (() => {
             if (settings.get_boolean ("show-welcome")) {
@@ -256,6 +278,26 @@ public class MainWindow : Hdy.ApplicationWindow {
             return false;
         });
 
+    }
+
+    private void window_closed (ulong xid, string app_id) {
+        debug ("Window [%s] closed: %s", xid.to_string(), app_id);
+        if (window_map.has_key (app_id)) {
+            window_map[app_id].remove_xid (xid);
+            if (window_map[app_id].empty ()) {
+                uint pos = 0;
+                if (list_store.find (window_map[app_id], out pos)) {
+                    list_store.remove (pos);
+                }
+                window_map.unset (app_id);
+            }
+        }
+    }
+
+    private bool is_wayland () {
+        string[] spawn_env = Environ.get ();
+        unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
+        return wayland_display != null;
     }
 
     private ForeignWindow.DisplayMode get_default_mode () {
@@ -323,23 +365,62 @@ public class MainWindow : Hdy.ApplicationWindow {
         return box;
     }
 
-    private bool add_all_windows () {
+    private uint get_default_window_polling_frequency () {
+        return settings.get_uint ("window-polling-frequency");
+    }
+
+    private Gtk.Box get_window_polling_input () {
+        var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+            margin = 6
+        };
+
+        var label = new Gtk.Label (_("Window polling frequency")) {
+            hexpand = true,
+            halign = Gtk.Align.START
+        };
+        box.pack_start (label, true, true, 0);
+
+        var spin = new Gtk.SpinButton.with_range (1.0, 60.0, 1.0);
+        spin.set_value (get_default_window_polling_frequency ());
+        box.pack_start (spin, false, false, 0);
+
+        spin.changed.connect (() => {
+            var timeout = (uint)spin.value;
+            settings.set_uint("window-polling-frequency", timeout);
+            window_listener.set_timeout (timeout);
+            return;
+        });
+
+        box.show_all ();
+
+        return box;
+    }
+
+    private bool add_all_wnck_windows () {
         var screen = Wnck.Screen.get_default ();
         unowned List<Wnck.Window> windows = screen.get_windows ();
         foreach (Wnck.Window window in windows) {
-            add_window (window);
+            add_wnck_window (window);
         }
         return Source.REMOVE;
     }
 
-    private void add_window (Wnck.Window window) {
+    private void add_wnck_window (Wnck.Window window) {
         ulong xid = window.get_xid ();
         unowned string app_id = window.get_class_instance_name ();
+        add_window (xid, app_id);
+    }
 
+    private void add_xish_window (XishWindow window) {
+        ulong xid = window.get_xid ();
+        unowned string app_id = window.get_class_instance_name ();
+        add_window (xid, app_id);
+    }
+
+    private void add_window (ulong xid, string app_id) {
         if (app_id in ignore_apps) {
             return;
         }
-
         if (!window_map.has_key (app_id)) {
             append (app_id);
         }
@@ -347,11 +428,14 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     private void show_welcome_dialog () {
-        var dialog = new Granite.MessageDialog.with_image_from_icon_name (
-            _("Thank you for using Darkbar!"),
-            _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported."),
-            "com.github.bluesabre.darkbar"
+        var dialog = new Gtk.MessageDialog (
+            this,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            Gtk.MessageType.INFO,
+            Gtk.ButtonsType.CLOSE,
+            _("Thank you for using Darkbar!")
         );
+        dialog.secondary_text = _("Darkbar replaces window decorations with your preference of a dark or light theme variant. Only applications using a standard titlebar layout are supported.");
 
         var custom_widget = new Gtk.CheckButton.with_label (_("Show this dialog next time."));
         custom_widget.show ();
@@ -362,7 +446,9 @@ public class MainWindow : Hdy.ApplicationWindow {
             dialog.destroy ();
         });
 
-        dialog.custom_bin.add (custom_widget);
+        var message_area = (Gtk.Box)dialog.message_area;
+
+        message_area.add (custom_widget);
         dialog.show ();
     }
 
