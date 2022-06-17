@@ -1,4 +1,5 @@
 *~
 .flatpak-builder/
 build/
+build-dir/
 debian/files

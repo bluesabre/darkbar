@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: extra\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-10 10:58+0100\n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,10 +29,6 @@ msgstr ""
 #: data/com.github.bluesabre.darkbar.desktop.in:5
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:10
 msgid "Darken application titlebars based on your preference"
-msgstr ""
-
-#: data/com.github.bluesabre.darkbar.desktop.in:8
-msgid "com.github.bluesabre.darkbar"
 msgstr ""
 
 #: data/com.github.bluesabre.darkbar.desktop.in:10
@@ -75,6 +71,6 @@ msgid ""
 "is unaffected by Darkbar, the application controls its window decorations."
 msgstr ""
 
-#: data/com.github.bluesabre.darkbar.appdata.xml.in:36
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:37
 msgid "The application window"
 msgstr ""

@@ -38,3 +38,10 @@ To install, use `ninja install`, then execute with `com.github.bluesabre.darkbar
 ## Translations
 
 To contribute translations, please visit [Transifex](https://www.transifex.com/bluesabreorg/darkbar) or submit a pull request.
+
+To update the translation templates, use `ninja`
+
+    meson build --prefix=/usr
+    cd build
+    ninja com.github.bluesabre.darkbar-pot
+    ninja extra-pot
