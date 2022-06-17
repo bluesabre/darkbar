@@ -14,7 +14,7 @@ public class ForeignWindow : GLib.Object {
 
     public string app_id { get; set; }
     public string app_name { get; set; }
-    public string icon_name { get; set; }
+    public GLib.Icon icon { get; set; }
     public DisplayMode mode { get; set; }
     public DisplayMode system_mode { get; set; }
     public DisplayMode actual_mode { get; set; }
@@ -23,13 +23,13 @@ public class ForeignWindow : GLib.Object {
 
     public ForeignWindow (string app_id,
                           string app_name,
-                          string icon_name,
+                          GLib.Icon icon,
                           DisplayMode mode,
                           bool prefers_dark,
                           bool sandboxed) {
         Object (app_id: app_id,
                 app_name: app_name,
-                icon_name: icon_name,
+                icon: icon,
                 mode: mode,
                 system_mode: prefers_dark ? DisplayMode.DARK : DisplayMode.LIGHT,
                 sandboxed: sandboxed);

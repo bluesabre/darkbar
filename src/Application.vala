@@ -60,6 +60,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
     public bool sandboxed { get; set; }
+    public AppRegistry app_registry { get; set; }
     public bool run_in_background { get; set; }
 
     private XishWindowListener window_listener { get; set; }
@@ -73,6 +74,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         "com.github.bluesabre.darkbar",
         "plank",
         "gnome-shell"
+    };
+
+    public string[] ignore_app_prefixes = {
+        "join?",
+        "crx__"
     };
 
     static construct {
@@ -90,6 +96,8 @@ public class MainWindow : Hdy.ApplicationWindow {
         if (file.query_exists (null)) {
             sandboxed = true;
         }
+
+        app_registry = new AppRegistry (sandboxed);
 
         settings = new GLib.Settings ("com.github.bluesabre.darkbar");
         var gtk_settings = Gtk.Settings.get_default ();
@@ -175,13 +183,22 @@ public class MainWindow : Hdy.ApplicationWindow {
                 margin = 6
             };
 
-            var image = new Gtk.Image.from_icon_name (((ForeignWindow)obj).icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
-                pixel_size = 24
+            Gtk.Image? image;
+            GLib.Icon icon = ((ForeignWindow)obj).icon;
+
+            image = new Gtk.Image.from_gicon (icon, Gtk.IconSize.LARGE_TOOLBAR) {
+                pixel_size = 24,
+                tooltip_text = icon.to_string (),
+                has_tooltip = true
             };
+
             box.pack_start (image, false, false, 0);
 
             var label = new Gtk.Label (((ForeignWindow)obj).app_name) {
-                halign = Gtk.Align.START
+                halign = Gtk.Align.START,
+                tooltip_text = ((ForeignWindow)obj).app_id,
+                has_tooltip = true,
+                ellipsize = Pango.EllipsizeMode.MIDDLE
             };
             box.pack_start (label, true, true, 0);
 
@@ -421,6 +438,11 @@ public class MainWindow : Hdy.ApplicationWindow {
         if (app_id in ignore_apps) {
             return;
         }
+        foreach (string prefix in ignore_app_prefixes) {
+            if (app_id.has_prefix (prefix)) {
+                return;
+            }
+        }
         if (!window_map.has_key (app_id)) {
             append (app_id);
         }
@@ -452,88 +474,29 @@ public class MainWindow : Hdy.ApplicationWindow {
         dialog.show ();
     }
 
-    private string? find_app_info (string app_id) {
-        var apps = new Gee.HashMap<string, uint> ();
-        List<AppInfo> app_infos = AppInfo.get_all ();
-        foreach (AppInfo app_info in app_infos) {
-            var score = 0;
-            var id = app_info.get_id ();
-            if (id.has_suffix (".desktop")) {
-                var desktop_id = id.dup ();
-                id = id.substring (0, id.length - 8);
-                if (id.down () == app_id) {
-                    return desktop_id;
-                }
-
-                var idx = id.index_of (".");
-                if (idx != -1) {
-                    // RDN, break it apart and traverse in reverse
-                    id = id.substring (idx + 1);
-                    var subids = id.down ().split (".");
-                    for (var i = subids.length - 1; i >= 0; i--) {
-                        var subid = subids[i];
-                        if (subid == app_id) {
-                            apps[desktop_id] = score;
-                            break;
-                        }
-                        score++;
-                    }
-                    continue;
-                }
-            }
-        }
-
-        // App with the lowest score (most accurate match) wins
-        if (apps.size > 0) {
-            string? best = null;
-            uint best_score = 99;
-            foreach (var entry in apps.entries) {
-                if (entry.value < best_score) {
-                    best_score = entry.value;
-                    best = entry.key;
-                }
-            }
-            return best;
-        }
-
-        if ("-" in app_id) {
-            string[] sublist = app_id.split ("-");
-            sublist = sublist[0:sublist.length - 1];
-            var sub_app_id = string.joinv ("-", sublist);
-            return find_app_info (sub_app_id);
-        }
-        return null;
-    }
-
-    private DesktopAppInfo? get_app_info (string app_id) {
-        var app_info = new DesktopAppInfo (app_id + ".desktop");
-        if (app_info == null) {
-            string? desktop_app_id = find_app_info (app_id);
-            if (desktop_app_id != null) {
-                app_info = new DesktopAppInfo (desktop_app_id);
-            }
-        }
-        return app_info;
+    private AppEntry? get_app_entry (string app_id) {
+        return app_registry.get_appentry (app_id);
     }
 
     public void append (string app_id) {
-        var app_info = get_app_info (app_id);
-        string? icon_name = null;
+        var app_entry = get_app_entry (app_id);
+        GLib.Icon? icon = null;
         var defaulted = false;
         var app_name = app_id;
-        if (app_info != null) {
-            icon_name = app_info.get_string ("Icon");
-            app_name = app_info.get_name ();
+        if (app_entry != null) {
+            icon = app_entry.get_icon ();
+            app_name = app_entry.get_name ();
         }
-        if (icon_name == null) {
-            icon_name = "application-default-icon";
+        if (icon == null) {
+            GLib.ThemedIcon themed_icon = new GLib.ThemedIcon ("application-default-icon");
+            icon = (GLib.Icon)themed_icon;
         }
         ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
         if (window_mode == ForeignWindow.DisplayMode.NONE) {
             window_mode = get_default_mode ();
             defaulted = true;
         }
-        var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark, sandboxed);
+        var window = new ForeignWindow (app_id, app_name, icon, window_mode, prefers_dark, sandboxed);
         window.recompute_mode ();
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);
