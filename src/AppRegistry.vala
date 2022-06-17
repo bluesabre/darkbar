@@ -5,8 +5,12 @@
 
 public class AppRegistry : GLib.Object {
 
-    // Gee.HashMap<string, DesktopAppInfo> appinfos = new Gee.HashMap<string, DesktopAppInfo> ();
     private Gee.HashMap<string, AppEntry> registry { get; set; }
+    public bool sandboxed { get; set; }
+
+    public AppRegistry(bool sandboxed) {
+        Object (sandboxed: sandboxed);
+    }
 
     construct {
         registry = new Gee.HashMap<string, AppEntry> ();
@@ -174,8 +178,10 @@ public class AppRegistry : GLib.Object {
 
     private void refresh_apps () {
         refresh_host_apps ();
-        refresh_flatpak_host_apps ();
-        refresh_flatpak_apps ();
+        if (sandboxed) {
+            refresh_flatpak_host_apps ();
+            refresh_flatpak_apps ();
+        }
     }
 
     public Gee.HashMap<string, DesktopAppInfo> get_appinfos () {

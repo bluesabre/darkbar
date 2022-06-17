@@ -86,18 +86,18 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     construct {
-
-        app_registry = new AppRegistry ();
-
+        
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
         resizable = false;
-
+        
         File file = File.new_for_path ("/var/run/host");
         if (file.query_exists (null)) {
             sandboxed = true;
         }
+
+        app_registry = new AppRegistry (sandboxed);
 
         settings = new GLib.Settings ("com.github.bluesabre.darkbar");
         var gtk_settings = Gtk.Settings.get_default ();
