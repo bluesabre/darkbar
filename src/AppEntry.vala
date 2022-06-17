@@ -65,8 +65,6 @@ public class AppEntry : GLib.Object {
                     binary = "/run/host" + binary;
                     keyfile.set_string ("Desktop Entry", "Exec", binary);
                 } else {
-                    // ./run/host/usr/bin/guake
-                    // Standard path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
                     string[] paths = {
                         "/usr/local/sbin",
                         "/usr/local/bin",
