@@ -184,36 +184,13 @@ public class MainWindow : Hdy.ApplicationWindow {
             };
 
             Gtk.Image? image;
-            var icon_name = ((ForeignWindow)obj).icon_name;
-            string? icon_filename;
+            GLib.Icon icon = ((ForeignWindow)obj).icon;
 
-            if (icon_name.has_prefix ("/")) {
-                icon_filename = icon_name;
-            } else {
-                image = new Gtk.Image.from_icon_name (icon_name, Gtk.IconSize.LARGE_TOOLBAR) {
-                    pixel_size = 24,
-                    tooltip_text = icon_name,
-                    has_tooltip = true
-                };
-
-                if (sandboxed) {
-                    icon_filename = GLib.Path.build_filename(
-                        "/", "run", "host", "usr", "share", "pixmaps", icon_name + ".png"
-                    );
-                }
-            }
-
-            if (icon_filename != null) {
-                File image_file = File.new_for_path (icon_filename);
-                if (image_file.query_exists (null)) {
-                    var icon = new GLib.FileIcon(image_file);
-                    image = new Gtk.Image.from_gicon (icon, Gtk.IconSize.LARGE_TOOLBAR) {
-                        pixel_size = 24,
-                        tooltip_text = icon_name,
-                        has_tooltip = true
-                    };
-                }
-            }
+            image = new Gtk.Image.from_gicon (icon, Gtk.IconSize.LARGE_TOOLBAR) {
+                pixel_size = 24,
+                tooltip_text = icon.to_string (),
+                has_tooltip = true
+            };
 
             box.pack_start (image, false, false, 0);
 
@@ -497,28 +474,29 @@ public class MainWindow : Hdy.ApplicationWindow {
         dialog.show ();
     }
 
-    private DesktopAppInfo? get_app_info (string app_id) {
-        return app_registry.get_appinfo (app_id);
+    private AppEntry? get_app_entry (string app_id) {
+        return app_registry.get_appentry (app_id);
     }
 
     public void append (string app_id) {
-        var app_info = get_app_info (app_id);
-        string? icon_name = null;
+        var app_entry = get_app_entry (app_id);
+        GLib.Icon? icon = null;
         var defaulted = false;
         var app_name = app_id;
-        if (app_info != null) {
-            icon_name = app_info.get_string ("Icon");
-            app_name = app_info.get_name ();
+        if (app_entry != null) {
+            icon = app_entry.get_icon ();
+            app_name = app_entry.get_name ();
         }
-        if (icon_name == null) {
-            icon_name = "application-default-icon";
+        if (icon == null) {
+            GLib.ThemedIcon themed_icon = new GLib.ThemedIcon ("application-default-icon");
+            icon = (GLib.Icon)themed_icon;
         }
         ForeignWindow.DisplayMode window_mode = retrieve_window_mode (app_id);
         if (window_mode == ForeignWindow.DisplayMode.NONE) {
             window_mode = get_default_mode ();
             defaulted = true;
         }
-        var window = new ForeignWindow (app_id, app_name, icon_name, window_mode, prefers_dark, sandboxed);
+        var window = new ForeignWindow (app_id, app_name, icon, window_mode, prefers_dark, sandboxed);
         window.recompute_mode ();
         window_map[app_id] = window;
         list_store.insert_sorted (window, this.compare_func);

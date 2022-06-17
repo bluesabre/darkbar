@@ -103,4 +103,60 @@ public class AppEntry : GLib.Object {
         this.from_filename_and_export_directory (filename, null);
     }
 
+    public unowned string get_name () {
+        return app_info.get_name ();
+    }
+
+    private GLib.Icon? get_icon_for_filename (string filename) {
+        File image_file = File.new_for_path (filename);
+        if (image_file.query_exists (null)) {
+            GLib.FileIcon icon = new GLib.FileIcon(image_file);
+            return (GLib.Icon)icon;
+        }
+        return null;
+    }
+
+    public GLib.Icon get_icon () {
+        GLib.Icon? icon;
+        GLib.ThemedIcon? themed_icon;
+        string? icon_name = app_info.get_string ("Icon");
+        if (icon_name == null) {
+            icon_name = "application-default-icon";
+        } else {
+            if (icon_name.has_prefix ("/")) {
+                icon = get_icon_for_filename (icon_name);
+                if (icon != null) {
+                    return icon;
+                }
+            } else {
+                string? icon_filename;
+                Gtk.IconTheme icon_theme = Gtk.IconTheme.get_default ();
+
+                if (icon_theme.has_icon (icon_name)) {
+                    themed_icon = new GLib.ThemedIcon (icon_name);
+                    return (GLib.Icon)themed_icon;
+                }
+
+                icon_filename = GLib.Path.build_filename(
+                    "/", "usr", "share", "pixmaps", icon_name + ".png"
+                );
+                icon = get_icon_for_filename (icon_filename);
+                if (icon != null) {
+                    return icon;
+                }
+
+                icon_filename = GLib.Path.build_filename(
+                    "/", "run", "host", icon_filename
+                );
+                icon = get_icon_for_filename (icon_filename);
+                if (icon != null) {
+                    return icon;
+                }
+            }
+        }
+
+        themed_icon = new GLib.ThemedIcon (icon_name);
+        return (GLib.Icon)themed_icon;
+    }
+
 }
