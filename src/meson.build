@@ -1,8 +1,8 @@
 sources = files (
     'Application.vala',
     'ForeignWindow.vala',
-    'FlatpakApplicationFinder.vala',
-    'SandboxedApplication.vala',
+    'AppRegistry.vala',
+    'AppEntry.vala',
     'XishWindowListener.vala',
     'XishWindow.vala',
 )

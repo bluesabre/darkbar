@@ -3,21 +3,21 @@
  * SPDX-FileCopyrightText: 2022 Sean Davis <sean@bluesabre.org>
  */
 
-public class SandboxedApplication : GLib.Object {
+public class AppEntry : GLib.Object {
 
     public string app_id { get; set; }
     public string filename { get; set; }
     public string export_directory { get; set; }
     public DesktopAppInfo? app_info { get; set; }
 
-    public SandboxedApplication(string app_id, string filename, DesktopAppInfo app_info) {
+    public AppEntry(string app_id, string filename, DesktopAppInfo app_info) {
         Object (app_id: app_id,
             filename: filename,
             app_info: app_info
         );
     }
 
-    public SandboxedApplication.from_app_info (DesktopAppInfo app_info) {
+    public AppEntry.from_app_info (DesktopAppInfo app_info) {
         Object (
             app_id: app_info.get_id (),
             filename: app_info.filename,
@@ -25,7 +25,7 @@ public class SandboxedApplication : GLib.Object {
         );
     }
 
-    public SandboxedApplication.from_filename_and_export_directory (string filename, string? export_directory) {
+    public AppEntry.from_filename_and_export_directory (string filename, string? export_directory) {
         var keyfile = new KeyFile ();
         try {
             keyfile.load_from_file (filename, KeyFileFlags.NONE);
@@ -99,7 +99,7 @@ public class SandboxedApplication : GLib.Object {
         }
     }
 
-    public SandboxedApplication.from_filename (string filename) {
+    public AppEntry.from_filename (string filename) {
         this.from_filename_and_export_directory (filename, null);
     }
 

@@ -60,7 +60,7 @@ public class MainWindow : Hdy.ApplicationWindow {
     public GLib.Settings settings { get; set; }
     public bool prefers_dark { get; set; }
     public bool sandboxed { get; set; }
-    public FlatpakApplicationFinder flatpak_finder { get; set; }
+    public AppRegistry app_registry { get; set; }
     public bool run_in_background { get; set; }
 
     private XishWindowListener window_listener { get; set; }
@@ -87,6 +87,8 @@ public class MainWindow : Hdy.ApplicationWindow {
 
     construct {
 
+        app_registry = new AppRegistry ();
+
         list_store = new ListStore (typeof (ForeignWindow));
         window_map = new Gee.HashMap<string, ForeignWindow> ();
         run_in_background = get_run_at_startup ();
@@ -95,7 +97,6 @@ public class MainWindow : Hdy.ApplicationWindow {
         File file = File.new_for_path ("/var/run/host");
         if (file.query_exists (null)) {
             sandboxed = true;
-            flatpak_finder = new FlatpakApplicationFinder ();
         }
 
         settings = new GLib.Settings ("com.github.bluesabre.darkbar");
@@ -496,142 +497,8 @@ public class MainWindow : Hdy.ApplicationWindow {
         dialog.show ();
     }
 
-    private Gee.HashMap<string, DesktopAppInfo> get_sandboxed_appinfos_by_path (string path) {
-        Gee.HashMap<string, DesktopAppInfo> appinfos = new Gee.HashMap<string, DesktopAppInfo> ();
-
-        try {
-            var directory = File.new_for_path (path);
-
-            var enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
-
-            FileInfo info;
-            while ((info = enumerator.next_file ()) != null) {
-                if (info.get_file_type () != FileType.DIRECTORY) {
-                    if (info.get_name ().has_suffix (".desktop")) {
-                        var filename = path + "/" + info.get_name ();
-                        var appinfo = new DesktopAppInfo.from_filename (filename);
-                        if (appinfo != null) {
-                            var sandboxed_app = new SandboxedApplication.from_app_info (appinfo);
-                            appinfos[sandboxed_app.app_id] = sandboxed_app.app_info;
-                        } else {
-                            var sandboxed_app = new SandboxedApplication.from_filename (filename);
-                            if (sandboxed_app != null) {
-                                appinfos[sandboxed_app.app_id] = sandboxed_app.app_info;
-                            }
-                        }
-                    }
-                }
-            }
-
-        } catch (Error e) {
-            stderr.printf ("Error: %s\n", e.message);
-        }
-
-        return appinfos;
-    }
-
-    private DesktopAppInfo? get_sandboxed_appinfo (string app_id) {
-        Gee.HashMap<string, DesktopAppInfo> app_infos = get_sandboxed_appinfos_by_path ("/run/host/usr/share/applications");
-
-        string? id = find_app_info_in_map (app_id, app_infos);
-
-        if (id != null) {
-            if (id in app_infos.keys) {
-                return app_infos[id];
-            }
-        }
-
-        app_infos = flatpak_finder.get_appinfos ();
-
-        id = find_app_info_in_map (app_id, app_infos);
-
-        if (id != null) {
-            if (id in app_infos.keys) {
-                return app_infos[id];
-            }
-        }
-
-        return null;
-    }
-
-    private string? find_app_info_in_map (string app_id, Gee.HashMap<string, AppInfo> app_infos) {
-        var apps = new Gee.HashMap<string, uint> ();
-        foreach (string id in app_infos.keys) {
-            var score = 0;
-            if (id.has_suffix (".desktop")) {
-                var desktop_id = id.dup ();
-                id = id.substring (0, id.length - 8);
-                if (id.down () == app_id) {
-                    return desktop_id;
-                }
-
-                var idx = id.index_of (".");
-                if (idx != -1) {
-                    // RDN, break it apart and traverse in reverse
-                    id = id.substring (idx + 1);
-                    var subids = id.down ().split (".");
-                    for (var i = subids.length - 1; i >= 0; i--) {
-                        var subid = subids[i];
-                        if (subid == app_id) {
-                            apps[desktop_id] = score;
-                            break;
-                        }
-                        score++;
-                    }
-                    continue;
-                }
-            }
-        }
-
-        // App with the lowest score (most accurate match) wins
-        if (apps.size > 0) {
-            string? best = null;
-            uint best_score = 99;
-            foreach (var entry in apps.entries) {
-                if (entry.value < best_score) {
-                    best_score = entry.value;
-                    best = entry.key;
-                }
-            }
-            return best;
-        }
-
-        if ("-" in app_id) {
-            string[] sublist = app_id.split ("-");
-            sublist = sublist[0:sublist.length - 1];
-            var sub_app_id = string.joinv ("-", sublist);
-            return find_app_info_in_map (sub_app_id, app_infos);
-        }
-        return null;
-    }
-
-    private Gee.HashMap<string, AppInfo> get_all_appinfos () {
-        Gee.HashMap<string, AppInfo> appinfos = new Gee.HashMap<string, AppInfo> ();
-        List<AppInfo> app_infos = AppInfo.get_all ();
-
-        foreach (AppInfo app_info in app_infos) {
-            appinfos[app_info.get_id ()] = app_info;
-        }
-
-        return appinfos;
-    }
-
-    private string? find_app_info (string app_id) {
-        return find_app_info_in_map (app_id, get_all_appinfos ());
-    }
-
     private DesktopAppInfo? get_app_info (string app_id) {
-        var app_info = new DesktopAppInfo (app_id + ".desktop");
-        if (app_info == null) {
-            string? desktop_app_id = find_app_info (app_id);
-            if (desktop_app_id != null) {
-                app_info = new DesktopAppInfo (desktop_app_id);
-            }
-        }
-        if (app_info == null) {
-            app_info = get_sandboxed_appinfo (app_id);
-        }
-        return app_info;
+        return app_registry.get_appinfo (app_id);
     }
 
     public void append (string app_id) {
