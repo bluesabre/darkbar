@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Moo, 2021
+# Moo, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bluesabre.darkbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-10 11:00+0100\n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
 "PO-Revision-Date: 2021-11-16 02:22+0000\n"
-"Last-Translator: Moo, 2021\n"
+"Last-Translator: Moo, 2022\n"
 "Language-Team: Lithuanian (https://www.transifex.com/bluesabreorg/teams/99550/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,47 +21,51 @@ msgstr ""
 "Language: lt\n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
-#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:97
+#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:109
 msgid "Darkbar"
 msgstr "Darkbar"
 
-#: src/Application.vala:134
+#: src/Application.vala:146
 msgid "Darkbar Preferences"
 msgstr "Darkbar nuostatos"
 
-#: src/Application.vala:152
+#: src/Application.vala:169
 msgid "Active Applications"
 msgstr "Aktyvios programos"
 
-#: src/Application.vala:180 src/Application.vala:308
+#: src/Application.vala:206 src/Application.vala:367
 msgid "None"
 msgstr "Nėra"
 
-#: src/Application.vala:181 src/Application.vala:309
+#: src/Application.vala:207 src/Application.vala:368
 msgid "Follow System Theme"
 msgstr "Sekti sistemos temą"
 
-#: src/Application.vala:182 src/Application.vala:310
+#: src/Application.vala:208 src/Application.vala:369
 msgid "Light"
 msgstr "Šviesi"
 
-#: src/Application.vala:183 src/Application.vala:311
+#: src/Application.vala:209 src/Application.vala:370
 msgid "Dark"
 msgstr "Tamsi"
 
-#: src/Application.vala:274
+#: src/Application.vala:333
 msgid "Run in the background"
 msgstr "Paleisti fone"
 
-#: src/Application.vala:301
+#: src/Application.vala:360
 msgid "Default style for new windows"
 msgstr "Numatytasis naujų langų stilius"
 
-#: src/Application.vala:351
+#: src/Application.vala:394
+msgid "Window polling frequency"
+msgstr "Langų užklausimo dažnumas"
+
+#: src/Application.vala:458
 msgid "Thank you for using Darkbar!"
 msgstr "Dėkojame, kad naudojatės Darkbar!"
 
-#: src/Application.vala:352
+#: src/Application.vala:460
 msgid ""
 "Darkbar replaces window decorations with your preference of a dark or light "
 "theme variant. Only applications using a standard titlebar layout are "
@@ -71,6 +75,6 @@ msgstr ""
 "temos variantu. Yra palaikomos tik programos, naudojančios standartinį "
 "antraštės juostos išdėstymą."
 
-#: src/Application.vala:356
+#: src/Application.vala:462
 msgid "Show this dialog next time."
 msgstr "Rodyti kitą kartą šį dialogą."
