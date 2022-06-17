@@ -69,10 +69,19 @@ public class AppRegistry : GLib.Object {
         );
     }
 
+    private bool path_exists (string filename) {
+        File check_file = File.new_for_path (filename);
+        return check_file.query_exists (null);
+    }
+
     private string[] listdir (string path) {
         string[] files = {};
 
         try {
+            if (!path_exists (path)) {
+                return files;
+            }
+
             var directory = File.new_for_path (path);
 
             var enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
@@ -85,7 +94,6 @@ public class AppRegistry : GLib.Object {
                 );
                 files += filename;
             }
-
         } catch (Error e) {
             stderr.printf ("Error: %s\n", e.message);
         }
@@ -107,6 +115,10 @@ public class AppRegistry : GLib.Object {
     private void refresh_flatpak_host_apps () {
         try {
             var path = "/run/host/usr/share/applications";
+            if (!path_exists (path)) {
+                return;
+            }
+
             var directory = File.new_for_path (path);
 
             var enumerator = directory.enumerate_children (FileAttribute.STANDARD_NAME, 0);
@@ -148,9 +160,7 @@ public class AppRegistry : GLib.Object {
         foreach (string path in paths) {
             string[] files = listdir (path);
             foreach (string directory in files) {
-                File check_directory = File.new_for_path (directory);
-                if (!check_directory.query_exists (null)) {
-                    print ("Does not exist: %s\n", directory);
+                if (!path_exists (directory)) {
                     continue;
                 }
                 var export = get_flatpak_export_path_for_app (directory);
@@ -257,6 +267,10 @@ public class AppRegistry : GLib.Object {
                 }
             }
             return best;
+        }
+
+        if (app_id == "Navigator") {
+            return fuzzy_match_app_info ("firefox");
         }
 
         if (app_id.has_prefix ("gnome-")) {
