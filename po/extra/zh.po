@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the extra package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# 玉堂白鹤 <yjwork@qq.com>, 2022
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: extra\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-10 10:58+0100\n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: 玉堂白鹤 <yjwork@qq.com>, 2022\n"
+"Language-Team: Chinese (https://www.transifex.com/bluesabreorg/teams/99550/zh/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:3
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:8
+msgid "Darkbar"
+msgstr "Darkbar"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:4
+msgid "Darkbar App"
+msgstr "Darkbar App"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:5
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:10
+msgid "Darken application titlebars based on your preference"
+msgstr "根据您的喜好将应用程序标题栏变暗"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:8
+msgid "com.github.bluesabre.darkbar"
+msgstr "com.github.bluesabre.darkbar"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:10
+msgid "Customization;Titlebar;"
+msgstr "Customization;Titlebar;定制;标题栏;"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:9
+msgid "Sean Davis"
+msgstr "Sean Davis"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:13
+msgid ""
+"Darkbar replaces window decorations with your preference of a dark or light "
+"theme variant."
+msgstr "Darkbar 用您喜欢的亮色或暗色主题替代窗户装饰。"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:14
+msgid "It allows the following settings for each application:"
+msgstr "它允许对每个应用程序进行以下设置："
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:16
+msgid "None: Let the application decide"
+msgstr "无: 由应用程序决定"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:17
+msgid "Follow System Theme: Use the same theme as the operating system"
+msgstr "跟随系统主题：使用与操作系统相同的主题"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:18
+msgid "Light: Prefer the \"light\" theme variant"
+msgstr "亮色: 更喜欢“亮色”主题变体"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:19
+msgid "Dark: Prefer the \"dark\" theme variant"
+msgstr " 暗色: 更喜欢“暗色”主题变体"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:21
+msgid ""
+"Only applications using traditional decorations are supported. If your app "
+"is unaffected by Darkbar, the application controls its window decorations."
+msgstr "仅支持使用传统装饰的应用程序。如果您的应用程序不受 Darkbar 影响，则应用程序将控制其窗口装饰。"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:36
+msgid "The application window"
+msgstr "应用程序窗口"
