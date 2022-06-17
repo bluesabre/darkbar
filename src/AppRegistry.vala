@@ -223,28 +223,26 @@ public class AppRegistry : GLib.Object {
 
         foreach (string id in registry.keys) {
             var score = 0;
-            if (id.has_suffix (".desktop")) {
-                var desktop_id = id.dup ();
-                id = id.substring (0, id.length - 8);
-                if (id.down () == app_id) {
-                    return desktop_id;
-                }
 
-                var idx = id.index_of (".");
-                if (idx != -1) {
-                    // RDN, break it apart and traverse in reverse
-                    id = id.substring (idx + 1);
-                    var subids = id.down ().split (".");
-                    for (var i = subids.length - 1; i >= 0; i--) {
-                        var subid = subids[i];
-                        if (subid == app_id) {
-                            apps[desktop_id] = score;
-                            break;
-                        }
-                        score++;
+            var desktop_id = id.dup ();
+            if (id.down () == app_id.down ()) {
+                return desktop_id;
+            }
+
+            var idx = id.index_of (".");
+            if (idx != -1) {
+                // RDN, break it apart and traverse in reverse
+                id = id.substring (idx + 1);
+                var subids = id.down ().split (".");
+                for (var i = subids.length - 1; i >= 0; i--) {
+                    var subid = subids[i];
+                    if (subid == app_id.down ()) {
+                        apps[desktop_id] = score;
+                        break;
                     }
-                    continue;
+                    score++;
                 }
+                continue;
             }
         }
 
@@ -259,6 +257,14 @@ public class AppRegistry : GLib.Object {
                 }
             }
             return best;
+        }
+
+        if (app_id.has_prefix ("gnome-")) {
+            string gnome_id = "org.gnome." + app_id.substring(6, app_id.length - 6);
+            string? fuzzy_gnome_id = fuzzy_match_app_info (gnome_id);
+            if (fuzzy_gnome_id != null) {
+                return fuzzy_gnome_id;
+            }
         }
 
         if ("-" in app_id) {
