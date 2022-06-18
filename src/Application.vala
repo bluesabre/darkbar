@@ -70,15 +70,18 @@ public class MainWindow : Hdy.ApplicationWindow {
     private uint timeout_id;
 
     public string[] ignore_apps = {
-        "io.elementary.wingpanel",
         "com.github.bluesabre.darkbar",
         "plank",
         "gnome-shell"
     };
 
     public string[] ignore_app_prefixes = {
+        // Zoom join windows
         "join?",
-        "crx__"
+        // Chrome/Edge PWA windows (always drawn by app)
+        "crx__",
+        // elementary apps (all use CSD)
+        "io.elementary."
     };
 
     static construct {
