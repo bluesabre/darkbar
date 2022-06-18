@@ -437,7 +437,10 @@ public class MainWindow : Hdy.ApplicationWindow {
         add_window (xid, app_id);
     }
 
-    private void add_window (ulong xid, string app_id) {
+    private void add_window (ulong xid, string? app_id) {
+        if (app_id == null) {
+            return;
+        }
         if (app_id in ignore_apps) {
             return;
         }
