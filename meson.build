@@ -2,7 +2,7 @@
 project (
     'com.github.bluesabre.darkbar',
     'c', 'vala',
-    version: '0.1.2'
+    version: '1.0.0'
 )
 
 # GNOME module
