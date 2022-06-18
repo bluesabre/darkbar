@@ -43,8 +43,9 @@ public class AppRegistry : GLib.Object {
 
     private string get_flatpak_system_path() {
         var systemPath = getenv("FLATPAK_SYSTEM_DIR");
-        if (systemPath != null)
+        if (systemPath != null) {
             return systemPath;
+        }
 
         return GLib.Path.build_filename(
             "/", "var", "lib", "flatpak"
@@ -53,16 +54,13 @@ public class AppRegistry : GLib.Object {
 
     private string get_flatpak_user_path() {
         var userPath = getenv("FLATPAK_USER_DIR");
-        if (userPath != null)
+        if (userPath != null) {
             return userPath;
-
-        var userDataDir = GLib.Environment.get_user_data_dir();
-
-        if (userDataDir == null) {
-            userDataDir = GLib.Path.build_filename(
-                GLib.Environment.get_home_dir(), ".local", "share"
-            );
         }
+
+        var userDataDir = GLib.Path.build_filename(
+            GLib.Environment.get_home_dir(), ".local", "share"
+        );
 
         return GLib.Path.build_filename(
             userDataDir, "flatpak"
