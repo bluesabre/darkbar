@@ -3,20 +3,20 @@ Upstream-Name: darkbar
 Source: https://github.com/bluesabre/darkbar
 
 Files: *
-Copyright: 2021 Sean Davis <sean@bluesabre.org>
+Copyright: 2021-2022 Sean Davis <sean@bluesabre.org>
 License: GPL-3.0+
 
 Files: data/com.github.bluesabre.darkbar.appdata.xml.in
-Copyright: 2021 Sean Davis <sean@bluesabre.org>
+Copyright: 2021-2022 Sean Davis <sean@bluesabre.org>
 License: CC0-1.0
 
 Files: data/icons/*
 Copyright: 2009-2021 elementary, Inc. (https://elementary.io),
- 2021 Sean Davis <sean@bluesabre.org>
+ 2021-2022 Sean Davis <sean@bluesabre.org>
 License: GPL-3.0+
  
 Files: debian/*
-Copyright: 2021 Sean Davis <sean@bluesabre.org>
+Copyright: 2021-2022 Sean Davis <sean@bluesabre.org>
 License: GPL-3.0+
 
 License: GPL-3.0+
