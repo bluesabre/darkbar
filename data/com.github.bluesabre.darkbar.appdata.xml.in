@@ -45,4 +45,12 @@
     <value key="x-appcenter-suggested-price">2</value>
     <value key="x-appcenter-stripe">pk_live_51JLp3FGKVohAr7ohdesxzQFvE1EDmOCa2I5gcmCtHIX4mrJ4huMVLpU62G8sYFuIXkI3uvek0ebu6FksDKPmK9pd00U0AZIk8T</value>
   </custom>
+
+  <releases>
+    <release version="1.0.0" date="2022-06-18" />
+    <release version="0.1.2" type="development" date="2021-08-07" />
+    <release version="0.1.1" type="development" date="2021-07-25" />
+    <release version="0.1.0" type="development" date="2021-06-27" />
+  </releases>
+
 </component>
