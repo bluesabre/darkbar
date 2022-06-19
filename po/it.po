@@ -1,18 +1,17 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the com.github.bluesabre.darkbar package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# ALBANO BATTISTELLA <albano_battistella@hotmail.com>, 2021.
 # 
 # Translators:
-# albanobattistella <albano_battistella@hotmail.com>, 2021
+# albanobattistella <albano_battistella@hotmail.com>, 2021,2022.
 # 
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bluesabre.darkbar\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-10 11:00+0100\n"
-"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"PO-Revision-Date: 2022-06-19 10:22+0100\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/bluesabreorg/teams/99550/it/)\n"
 "MIME-Version: 1.0\n"
