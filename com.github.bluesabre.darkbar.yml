@@ -26,13 +26,11 @@ finish-args:
   - '--filesystem=xdg-data/flatpak/app:ro'
 
   - '--share=ipc'
-  - '--socket=fallback-x11'
-  - '--socket=wayland'
+  - '--socket=x11'
 
   - '--system-talk-name=org.freedesktop.Accounts'
 
   - '--talk-name=org.gnome.SettingsDaemon'
-  - '--talk-name=org.freedesktop.Flatpak'
 
 # This section is where you list all the source code required to build your app.
 # If we had external dependencies that weren't included in our SDK, we would list
@@ -51,6 +49,32 @@ modules:
         url: https://gitlab.gnome.org/GNOME/libwnck.git
         tag: "3.36.0"
         commit: "3c469a0d7e58e36106eea7600ae2f6fd8aaed232"
+
+  - name: xprop
+    sources:
+      - type: archive
+        url: https://xorg.freedesktop.org/archive/individual/app/xprop-1.2.5.tar.gz
+        sha256: b7bf6b6be6cf23e7966a153fc84d5901c14f01ee952fbd9d930aa48e2385d670
+
+  - name: xdotool
+    no-autogen: true
+    make-args:
+      - WITHOUT_RPATH_FIX=1
+    make-install-args:
+      - 'PREFIX=${FLATPAK_DEST}'
+      - 'INSTALLMAN=${FLATPAK_DEST}/share/man'
+    sources:
+      - type: archive
+        url: https://github.com/jordansissel/xdotool/archive/v3.20211022.1/xdotool-3.20211022.1.tar.gz
+        sha256: 82b15a944a5e82fee15e0f6116bd9f642bc3d0bb6989fc0ca5ad9dfe35de0847
+        x-checker-data:
+          type: anitya
+          project-id: 8648
+          stable-only: true
+          url-template: https://github.com/jordansissel/xdotool/archive/v$version/xdotool-$version.tar.gz
+    cleanup:
+      - /share/man
+
   - name: darkbar
     buildsystem: meson
     sources:

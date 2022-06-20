@@ -128,11 +128,7 @@ public class ForeignWindow : GLib.Object {
             if (actual_mode == DisplayMode.DARK) {
                 modestr = "dark";
             }
-            var xprop = "xprop";
-            if (sandboxed) {
-                xprop = "flatpak-spawn --host xprop";
-            }
-            var cmd = "%s -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT '%s'".printf (xprop, xid, modestr);
+            var cmd = "xprop -id %lu -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT '%s'".printf (xid, modestr);
             try {
                 GLib.Process.spawn_command_line_async (cmd);
             } catch (GLib.SpawnError e) {
