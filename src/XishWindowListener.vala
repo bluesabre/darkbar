@@ -106,18 +106,6 @@ public class XishWindowListener : GLib.Object {
                                 out p_stderr,
                                 null);
 
-            if (sandboxed && "flatpak" in p_stdout) {
-                string[] s_stdout = {};
-                foreach (string line in p_stdout.split("\n")) {
-                    if ("flatpak" in line) {
-                        // Strip out surprise Flatpak output
-                    } else {
-                        s_stdout += line;
-                    }
-                }
-                p_stdout = string.joinv("\n", s_stdout);
-            }
-
             return p_stdout;
 
         } catch (SpawnError e) {

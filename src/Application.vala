@@ -315,6 +315,9 @@ public class MainWindow : Hdy.ApplicationWindow {
     }
 
     private bool is_wayland () {
+        if (sandboxed) {
+            return false;
+        }
         string[] spawn_env = Environ.get ();
         unowned string? wayland_display = Environ.get_variable (spawn_env, "WAYLAND_DISPLAY");
         return wayland_display != null;
