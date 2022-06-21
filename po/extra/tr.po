@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the extra package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Sabri Ünal <libreajans@gmail.com>, 2022
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: extra\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>, 2022\n"
+"Language-Team: Turkish (https://www.transifex.com/bluesabreorg/teams/99550/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:3
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:8
+msgid "Darkbar"
+msgstr "Darkbar"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:4
+msgid "Darkbar App"
+msgstr "Darkbar Uygulaması"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:5
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:10
+msgid "Darken application titlebars based on your preference"
+msgstr "Tercihinize göre uygulama başlık çubuklarını koyulaştırın"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:10
+msgid "Customization;Titlebar;"
+msgstr "Özelleştir;Başlık Çubuğu;Titlebar;"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:9
+msgid "Sean Davis"
+msgstr "Sean Davis"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:13
+msgid ""
+"Darkbar replaces window decorations with your preference of a dark or light "
+"theme variant."
+msgstr ""
+"Darkbar, pencere temalarını koyu veya açık tema tercihinizle değiştirir."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:14
+msgid "It allows the following settings for each application:"
+msgstr "Her uygulama için aşağıdaki ayarlara izin verir:"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:16
+msgid "None: Let the application decide"
+msgstr "Hiçbiri: Uygulamanın karar vermesini sağlar"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:17
+msgid "Follow System Theme: Use the same theme as the operating system"
+msgstr "Sistem Temasını Takip Et: İşletim sistemiyle aynı temayı kullanır"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:18
+msgid "Light: Prefer the \"light\" theme variant"
+msgstr "Açık: \"Açık\" temayı tercih et"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:19
+msgid "Dark: Prefer the \"dark\" theme variant"
+msgstr "Koyu: \"Koyu\" temayı tercih et"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:21
+msgid ""
+"Only applications using traditional decorations are supported. If your app "
+"is unaffected by Darkbar, the application controls its window decorations."
+msgstr ""
+"Yalnızca geleneksel dekorasyon kullanan uygulamalar desteklenir. Uygulamanız"
+" Darkbar'dan etkilenmiyorsa, uygulama pencere dekorasyonlarını kontrol edin."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:37
+msgid "The application window"
+msgstr "Uygulama penceresi"
