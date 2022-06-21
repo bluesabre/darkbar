@@ -20,17 +20,15 @@ command: com.github.bluesabre.darkbar
 # not using hardware like webcams, making sound, or reading external files, we
 # only need permission to draw our app on screen using either X11 or Wayland.
 finish-args:
+# Reading .desktop and icon files needed to display application details
   - '--filesystem=host:ro'
-  - '--filesystem=xdg-config/autostart:create'
-  - '--filesystem=/var/lib/flatpak/app:ro'
   - '--filesystem=xdg-data/flatpak/app:ro'
-
+  - '--filesystem=/var/lib/flatpak/app:ro'
+# Creating an autostart file to launch Darkbar in the background at startup
+  - '--filesystem=xdg-config/autostart:create'
+# Standard Permissions
   - '--share=ipc'
   - '--socket=x11'
-
-  - '--system-talk-name=org.freedesktop.Accounts'
-
-  - '--talk-name=org.gnome.SettingsDaemon'
 
 # This section is where you list all the source code required to build your app.
 # If we had external dependencies that weren't included in our SDK, we would list
