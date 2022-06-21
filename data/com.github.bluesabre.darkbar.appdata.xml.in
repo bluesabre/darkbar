@@ -47,10 +47,41 @@
   </custom>
 
   <releases>
-    <release version="1.0.0" date="2022-06-18" />
-    <release version="0.1.2" type="development" date="2021-08-07" />
-    <release version="0.1.1" type="development" date="2021-07-25" />
-    <release version="0.1.0" type="development" date="2021-06-27" />
+    <release version="1.0.0" date="2022-06-18">
+      <description>
+        <p>New features:</p>
+        <ul>
+          <li>XWayland support</li>
+          <li>Improved window and icon support for Flatpak</li>
+          <li>Default style preference for new windows</li>
+        </ul>
+        <p>Other improvements:</p>
+        <ul>
+          <li>Support for custom window controls layout</li>
+          <li>Support for the cross-platform dark preference</li>
+          <li>Removed non-standard or non-themeable app windows (Chrome PWAs, elementary apps, Zoom)</li>
+        </ul>
+      </description>
+      <url>https://github.com/bluesabre/darkbar/releases/tag/1.0.0</url>
+    </release>
+    <release version="0.1.2" type="development" date="2021-08-07">
+      <description>
+        <p>This release enables payments on elementary AppCenter</p>
+      </description>
+      <url>https://github.com/bluesabre/darkbar/releases/tag/0.1.2</url>
+    </release>
+    <release version="0.1.1" type="development" date="2021-07-25">
+      <description>
+        <p>This is the first release published to elementary AppCenter</p>
+      </description>
+      <url>https://github.com/bluesabre/darkbar/releases/tag/0.1.1</url>
+    </release>
+    <release version="0.1.0" type="development" date="2021-06-27">
+      <description>
+        <p>Initial release</p>
+      </description>
+      <url>https://github.com/bluesabre/darkbar/releases/tag/0.1.0</url>
+    </release>
   </releases>
 
 </component>
