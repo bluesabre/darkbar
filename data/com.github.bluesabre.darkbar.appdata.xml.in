@@ -34,8 +34,12 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>The application window</caption>
-      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/1x.png</image>
+      <caption>Darkbar, applying the light system theme to the GIMP window decorations</caption>
+      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Darkbar, applying the dark system theme to the GIMP window decorations</caption>
+      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-dark.png</image>
     </screenshot>
   </screenshots>
 
