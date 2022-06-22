@@ -33,6 +33,7 @@
   </provides>
 
   <screenshots>
+    <!--
     <screenshot type="default">
       <caption>Applying the dark system theme on GNOME</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-dark.png</image>
@@ -41,12 +42,13 @@
       <caption>Applying the light system theme on GNOME</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-light.png</image>
     </screenshot>
-    <screenshot>
-      <caption>Applying the dark system theme on elementary OS</caption>
+    -->
+    <screenshot type="default">
+      <caption>Applying the dark system theme to an app window</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-dark.png</image>
     </screenshot>
     <screenshot>
-      <caption>Applying the light system theme on elementary OS</caption>
+      <caption>Applying the light system theme to an app window</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-light.png</image>
     </screenshot>
   </screenshots>
