@@ -13,14 +13,25 @@ It allows the following settings for each application:
 
 Only applications using traditional decorations are supported. If your app is unaffected by Darkbar, the application controls its window decorations.
 
-## Building, Testing, and Installation
+## Installation
 
-You'll need the following dependencies:
+### elementary OS AppCenter
+<a href="https://appcenter.elementary.io/com.github.bluesabre.darkbar"><img src="https://appcenter.elementary.io/badge.svg" alt="Get it on AppCenter" /></a>
+
+### Flathub
+<a href="https://flathub.org/apps/details/com.github.bluesabre.darkbar"><img height="50" alt="Download on Flathub" src="https://flathub.org/assets/badges/flathub-badge-en.png"/></a>
+
+## Building
+
+You'll need the following dependencies to build:
 
 * libhandy >= 1.5.0
 * libwnck >= 3.36.0
 * meson >= 0.43.0
 * valac
+
+And you'll need the following to run Darkbar:
+
 * xprop
 * xdotool (for Wayland support)
 
