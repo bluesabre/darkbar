@@ -5,7 +5,7 @@ runtime: io.elementary.Platform
 runtime-version: '7'
 sdk: io.elementary.Sdk
 
-# FlatHub
+# Flathub
 # https://github.com/flathub/com.github.bluesabre.darkbar
 #runtime: org.gnome.Platform
 #runtime-version: '42'

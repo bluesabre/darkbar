@@ -59,6 +59,12 @@
   </custom>
 
   <releases>
+    <release version="1.0.1" date="2022-06-22">
+      <description>
+        <p>This release reduces the permissions required to run Darkbar.</p>
+      </description>
+      <url>https://github.com/bluesabre/darkbar/releases/tag/1.0.1</url>
+    </release>
     <release version="1.0.0" date="2022-06-18">
       <description>
         <p>New features:</p>
