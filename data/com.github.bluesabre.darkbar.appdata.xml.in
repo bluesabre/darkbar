@@ -34,12 +34,20 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Applying the dark system theme to the GIMP window</caption>
+      <caption>Applying the dark system theme on GNOME</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-dark.png</image>
     </screenshot>
     <screenshot>
-      <caption>Applying the light system theme to the GIMP window</caption>
+      <caption>Applying the light system theme on GNOME</caption>
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Applying the dark system theme on elementary OS</caption>
+      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-dark.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Applying the light system theme on elementary OS</caption>
+      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-light.png</image>
     </screenshot>
   </screenshots>
 
