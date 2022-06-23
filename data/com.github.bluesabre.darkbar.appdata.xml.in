@@ -33,6 +33,10 @@
   </provides>
 
   <screenshots>
+    <screenshot type="default">
+      <caption>The Darkbar application window</caption>
+      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/1x.png</image>
+    </screenshot>
     <!--
     <screenshot type="default">
       <caption>Applying the dark system theme on GNOME</caption>
@@ -43,14 +47,6 @@
       <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/gnome-light.png</image>
     </screenshot>
     -->
-    <screenshot type="default">
-      <caption>Applying the dark system theme to an app window</caption>
-      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-dark.png</image>
-    </screenshot>
-    <screenshot>
-      <caption>Applying the light system theme to an app window</caption>
-      <image>https://raw.githubusercontent.com/bluesabre/darkbar/main/data/screenshots/elementary-light.png</image>
-    </screenshot>
   </screenshots>
 
   <custom>
