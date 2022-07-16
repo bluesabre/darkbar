@@ -5,15 +5,16 @@
 # 
 # Translators:
 # ятебясъем, 2022
+# Sergey A., 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bluesabre.darkbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-10 11:00+0100\n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
 "PO-Revision-Date: 2021-11-16 02:22+0000\n"
-"Last-Translator: ятебясъем, 2022\n"
+"Last-Translator: Sergey A., 2022\n"
 "Language-Team: Russian (https://www.transifex.com/bluesabreorg/teams/99550/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,55 +22,60 @@ msgstr ""
 "Language: ru\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:97
+#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:109
 msgid "Darkbar"
 msgstr "Darkbar"
 
-#: src/Application.vala:134
+#: src/Application.vala:146
 msgid "Darkbar Preferences"
 msgstr "Параметры Darkbar"
 
-#: src/Application.vala:152
+#: src/Application.vala:169
 msgid "Active Applications"
 msgstr "Активные приложения"
 
-#: src/Application.vala:180 src/Application.vala:308
+#: src/Application.vala:206 src/Application.vala:367
 msgid "None"
 msgstr "По умолчанию"
 
-#: src/Application.vala:181 src/Application.vala:309
+#: src/Application.vala:207 src/Application.vala:368
 msgid "Follow System Theme"
 msgstr "Как в системе"
 
-#: src/Application.vala:182 src/Application.vala:310
+#: src/Application.vala:208 src/Application.vala:369
 msgid "Light"
 msgstr "Светлая тема"
 
-#: src/Application.vala:183 src/Application.vala:311
+#: src/Application.vala:209 src/Application.vala:370
 msgid "Dark"
 msgstr "Тёмная тема"
 
-#: src/Application.vala:274
+#: src/Application.vala:333
 msgid "Run in the background"
 msgstr "Запускать в фоновом режиме"
 
-#: src/Application.vala:301
+#: src/Application.vala:360
 msgid "Default style for new windows"
 msgstr "Стандартное оформление новых окон"
 
-#: src/Application.vala:351
+#: src/Application.vala:394
+msgid "Window polling frequency"
+msgstr "Частота опроса окна"
+
+#: src/Application.vala:458
 msgid "Thank you for using Darkbar!"
 msgstr "Благодарим за использование Darkbar!"
 
-#: src/Application.vala:352
+#: src/Application.vala:460
 msgid ""
 "Darkbar replaces window decorations with your preference of a dark or light "
 "theme variant. Only applications using a standard titlebar layout are "
 "supported."
 msgstr ""
-"Darkbar заменяет оформление выбранных окон на тёмный или светлый вариант. "
-"Поддерживаются только приложения, использующие стандартный макет заголовка."
+"Darkbar заменяет оформление окон по вашему предпочтению на тёмный или "
+"светлый вариант. Поддерживаются только приложения, использующие стандартный "
+"макет заголовка."
 
-#: src/Application.vala:356
+#: src/Application.vala:462
 msgid "Show this dialog next time."
 msgstr "Показать при следующем запуске"
