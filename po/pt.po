@@ -4,64 +4,68 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Hugo Carvalho <hugokarvalho@hotmail.com>, 2021
+# Hugo Carvalho <hugokarvalho@hotmail.com>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bluesabre.darkbar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-10 11:00+0100\n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
 "PO-Revision-Date: 2021-11-16 02:22+0000\n"
-"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>, 2021\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>, 2022\n"
 "Language-Team: Portuguese (https://www.transifex.com/bluesabreorg/teams/99550/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:97
+#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:109
 msgid "Darkbar"
 msgstr "Darkbar"
 
-#: src/Application.vala:134
+#: src/Application.vala:146
 msgid "Darkbar Preferences"
 msgstr "Preferências da Darkbar"
 
-#: src/Application.vala:152
+#: src/Application.vala:169
 msgid "Active Applications"
 msgstr "Aplicações ativas"
 
-#: src/Application.vala:180 src/Application.vala:308
+#: src/Application.vala:206 src/Application.vala:367
 msgid "None"
 msgstr "Nenhuma"
 
-#: src/Application.vala:181 src/Application.vala:309
+#: src/Application.vala:207 src/Application.vala:368
 msgid "Follow System Theme"
 msgstr "Seguir o tema do sistema"
 
-#: src/Application.vala:182 src/Application.vala:310
+#: src/Application.vala:208 src/Application.vala:369
 msgid "Light"
 msgstr "Clara"
 
-#: src/Application.vala:183 src/Application.vala:311
+#: src/Application.vala:209 src/Application.vala:370
 msgid "Dark"
 msgstr "Escura"
 
-#: src/Application.vala:274
+#: src/Application.vala:333
 msgid "Run in the background"
 msgstr "Executar em segundo plano"
 
-#: src/Application.vala:301
+#: src/Application.vala:360
 msgid "Default style for new windows"
 msgstr "Estilo predefinido para novas janelas"
 
-#: src/Application.vala:351
+#: src/Application.vala:394
+msgid "Window polling frequency"
+msgstr "Frequência de sondagem da janela"
+
+#: src/Application.vala:458
 msgid "Thank you for using Darkbar!"
 msgstr "Obrigado por usar a Darkbar!"
 
-#: src/Application.vala:352
+#: src/Application.vala:460
 msgid ""
 "Darkbar replaces window decorations with your preference of a dark or light "
 "theme variant. Only applications using a standard titlebar layout are "
@@ -71,6 +75,6 @@ msgstr ""
 "variante temática escura ou clara. Apenas são suportadas aplicações que "
 "utilizem uma disposição predefinida da barra de título."
 
-#: src/Application.vala:356
+#: src/Application.vala:462
 msgid "Show this dialog next time."
 msgstr "Mostrar esta janela na próxima vez."
