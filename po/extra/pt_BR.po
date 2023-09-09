@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the extra package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Hugo Carvalho <hugokarvalho@hotmail.com>, 2023
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: extra\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>, 2023\n"
+"Language-Team: Portuguese (Brazil) (https://app.transifex.com/bluesabreorg/teams/99550/pt_BR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:3
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:8
+msgid "Darkbar"
+msgstr "Darkbar"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:4
+msgid "Darkbar App"
+msgstr "Aplicação Darkbar"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:5
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:10
+msgid "Darken application titlebars based on your preference"
+msgstr ""
+"Escurecer as barras de título das aplicações com base nas suas preferências"
+
+#: data/com.github.bluesabre.darkbar.desktop.in:10
+msgid "Customization;Titlebar;"
+msgstr "Personalização;Barra de título;"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:9
+msgid "Sean Davis"
+msgstr "Sean Davis"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:13
+msgid ""
+"Darkbar replaces window decorations with your preference of a dark or light "
+"theme variant."
+msgstr ""
+"A Darkbar substitui as decorações das janelas com a sua preferência de uma "
+"variante de tema escuro ou claro."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:14
+msgid "It allows the following settings for each application:"
+msgstr "Permite as seguintes definições para cada aplicação:"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:16
+msgid "None: Let the application decide"
+msgstr "Nenhuma: Deixar a aplicação decidir"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:17
+msgid "Follow System Theme: Use the same theme as the operating system"
+msgstr ""
+"Seguir o tema do sistema: Utilizar o mesmo tema que o sistema operativo"
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:18
+msgid "Light: Prefer the \"light\" theme variant"
+msgstr "Claro: Preferir a variante do tema \"claro\"."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:19
+msgid "Dark: Prefer the \"dark\" theme variant"
+msgstr "Escuro: Preferir a variante do tema \"escuro\"."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:21
+msgid ""
+"Only applications using traditional decorations are supported. If your app "
+"is unaffected by Darkbar, the application controls its window decorations."
+msgstr ""
+"Apenas as aplicações que usam decorações tradicionais são suportadas. Se a "
+"sua aplicação não for afetada pela Darkbar, a aplicação controla as suas "
+"decorações de janela."
+
+#: data/com.github.bluesabre.darkbar.appdata.xml.in:37
+msgid "The application window"
+msgstr "A janela da aplicação"
