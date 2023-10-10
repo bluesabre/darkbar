@@ -55,7 +55,7 @@ msgstr ""
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:14
 msgid "It allows the following settings for each application:"
-msgstr "Permite las configuraciones siguientes para cada aplicación:"
+msgstr "Permet les configuracions següents per a cada aplicació:"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:16
 msgid "None: Let the application decide"
