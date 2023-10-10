@@ -50,8 +50,8 @@ msgid ""
 "Darkbar replaces window decorations with your preference of a dark or light "
 "theme variant."
 msgstr ""
-"Darkbar modifica las decoraciones de las ventanas según su preferencia de "
-"variante de tema oscuro o claro."
+"El Darkbar modifica les decoracions de les finestres segons la vostra "
+"preferència de variant de tema fosc o clar."
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:14
 msgid "It allows the following settings for each application:"
