@@ -72,7 +72,7 @@ msgstr "Clar: prefereix la variant clara del tema"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:19
 msgid "Dark: Prefer the \"dark\" theme variant"
-msgstr "Oscuro: preferir la variante de tema oscura"
+msgstr "Fosc: prefereix la variant fosca del tema"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:21
 msgid ""
