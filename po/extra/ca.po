@@ -59,11 +59,12 @@ msgstr "Permet les configuracions següents per a cada aplicació:"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:16
 msgid "None: Let the application decide"
-msgstr "Ninguna: dejar que la aplicación decida"
+msgstr "Cap: deixa que l’aplicació en decideixi"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:17
 msgid "Follow System Theme: Use the same theme as the operating system"
-msgstr "Seguir tema del sistema: usar el mismo tema que el sistema operativo"
+msgstr ""
+"Segueix el tema del sistema: usa el mateix tema que el sistema operatiu"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:18
 msgid "Light: Prefer the \"light\" theme variant"
