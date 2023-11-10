@@ -67,7 +67,7 @@ msgstr ""
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:18
 msgid "Light: Prefer the \"light\" theme variant"
-msgstr "Šviesi: Teikti pirmenybę „šviesios“ temos variantui"
+msgstr "Šviesus: Teikti pirmenybę „šviesiam“ apipavidalinimo variantui"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:19
 msgid "Dark: Prefer the \"dark\" theme variant"
