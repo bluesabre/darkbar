@@ -71,9 +71,9 @@ msgid ""
 "theme variant. Only applications using a standard titlebar layout are "
 "supported."
 msgstr ""
-"Darkbar pakeičia langų dekoracijas jūsų pageidaujamos tamsios ar šviesios "
-"temos variantu. Yra palaikomos tik programos, naudojančios standartinį "
-"antraštės juostos išdėstymą."
+"Darkbar pakeičia langų dekoracijas jūsų pageidaujamu tamsiu ar šviesiu "
+"apipavidalinimo variantu. Yra palaikomos tik programos, naudojančios "
+"standartinį antraštės juostos išdėstymą."
 
 #: src/Application.vala:462
 msgid "Show this dialog next time."
