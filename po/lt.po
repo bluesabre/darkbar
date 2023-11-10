@@ -43,11 +43,11 @@ msgstr "Sekti sistemos apipavidalinimą"
 
 #: src/Application.vala:208 src/Application.vala:369
 msgid "Light"
-msgstr "Šviesi"
+msgstr "Šviesus"
 
 #: src/Application.vala:209 src/Application.vala:370
 msgid "Dark"
-msgstr "Tamsi"
+msgstr "Tamsus"
 
 #: src/Application.vala:333
 msgid "Run in the background"
