@@ -71,7 +71,7 @@ msgstr "Šviesus: Teikti pirmenybę „šviesiam“ apipavidalinimo variantui"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:19
 msgid "Dark: Prefer the \"dark\" theme variant"
-msgstr "Tamsi: Teikti pirmenybę „tamsios“ temos variantui"
+msgstr "Tamsus: Teikti pirmenybę „tamsiam“ apipavidalinimo variantui"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:21
 msgid ""
