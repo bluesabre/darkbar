@@ -61,7 +61,9 @@ msgstr "Nėra: Leisti programai spręsti"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:17
 msgid "Follow System Theme: Use the same theme as the operating system"
-msgstr "Sekti sistemos temą: Naudoti tą pačią temą kaip ir operacinė sistema"
+msgstr ""
+"Sekti sistemos apipavidalinimą: Naudoti tą patį apipavidalinimą kaip ir "
+"operacinė sistema"
 
 #: data/com.github.bluesabre.darkbar.appdata.xml.in:18
 msgid "Light: Prefer the \"light\" theme variant"
