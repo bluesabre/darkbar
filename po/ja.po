@@ -71,7 +71,7 @@ msgid ""
 "theme variant. Only applications using a standard titlebar layout are "
 "supported."
 msgstr ""
-"DarkBar "
+"Darkbar "
 "はウィンドウのタイトルバーをダークまたはライトテーマに変更できます。標準的なレイアウトのタイトルバーを使用するアプリケーションにのみ対応しています。"
 
 #: src/Application.vala:462
