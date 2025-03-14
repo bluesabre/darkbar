@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.bluesabre.darkbar package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Warut Bunprasert <warut.b@disroot.org>, 2025
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: com.github.bluesabre.darkbar\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-17 05:57-0400\n"
+"PO-Revision-Date: 2021-11-16 02:22+0000\n"
+"Last-Translator: Warut Bunprasert <warut.b@disroot.org>, 2025\n"
+"Language-Team: Esperanto (https://app.transifex.com/bluesabreorg/teams/99550/eo/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: eo\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/Application.vala:34 src/Application.vala:53 src/Application.vala:109
+msgid "Darkbar"
+msgstr "Darkbar"
+
+#: src/Application.vala:146
+msgid "Darkbar Preferences"
+msgstr "Agordo de Darkbar"
+
+#: src/Application.vala:169
+msgid "Active Applications"
+msgstr "Aktivaj aplikaĵoj"
+
+#: src/Application.vala:206 src/Application.vala:367
+msgid "None"
+msgstr "Neniu"
+
+#: src/Application.vala:207 src/Application.vala:368
+msgid "Follow System Theme"
+msgstr "Laŭ sistem-etoso"
+
+#: src/Application.vala:208 src/Application.vala:369
+msgid "Light"
+msgstr "Luma"
+
+#: src/Application.vala:209 src/Application.vala:370
+msgid "Dark"
+msgstr "Malluma"
+
+#: src/Application.vala:333
+msgid "Run in the background"
+msgstr "Fona lanĉo"
+
+#: src/Application.vala:360
+msgid "Default style for new windows"
+msgstr "Defaŭlta stilo por novaj fenestroj"
+
+#: src/Application.vala:394
+msgid "Window polling frequency"
+msgstr "Fenestra enket-frekvenco"
+
+#: src/Application.vala:458
+msgid "Thank you for using Darkbar!"
+msgstr "Dankon por uzi Darkbar!"
+
+#: src/Application.vala:460
+msgid ""
+"Darkbar replaces window decorations with your preference of a dark or light "
+"theme variant. Only applications using a standard titlebar layout are "
+"supported."
+msgstr ""
+"Darkbar anstataŭigas fenestrajn ornamadojn per via agordo de malluma aŭ luma"
+" etoso. Nur aplikaĵoj kun norma titolbreto-aranĝo estas agordeblaj."
+
+#: src/Application.vala:462
+msgid "Show this dialog next time."
+msgstr "Montri tiun ĉi dialogon apud mi."
